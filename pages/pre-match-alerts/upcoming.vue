@@ -21,24 +21,30 @@
       <b-overlay :show="loading" rounded="lg">
         <div class="up-coming-body">
           <div
-            v-for="strategy in strategies"
+            v-for="(strategy, strategy_index) in strategies"
             :key="strategy.id"
             class="strategy-card mt-5"
           >
           <b-row class="founds-container" no-gutters>
                <b-col md="6" sm="12" class="d-flex" style="flex-direction:column;justify-content:flex-start;">
                     <h1 class="strategy-header-title">
-                    {{ loading ? "" : strategy["title"] }}
+                    {{ loading ? "Loading Strategies..." : strategy["title"] }}
                     </h1>
-                    <span class="strategy-header-description">
-                    {{ loading ? "" : strategy["note"] }}
+                    <span class="text-warning strategy-header-description">
+                    {{ loading ? "Just a second please..." : strategy["note"] }}
                     </span>
                 </b-col>
                 <b-col md="6" sm="12">
                     <section class="">
                     <div class="filter-items-wrapper scroll-on-mobile column-gap-10">
-                        <FixtureDatePicker v-model="selected_date" v-if="!liveMode">
-                        <FixtureStatPicker v-model="selected_stat" v-if="!liveMode"/>                    >
+                        <FixtureDatePicker                           
+                          :minDate="new Date()"
+                          :buttonText="$moment(strategy['selected_date']).format('LL')"
+                           v-model="strategies[strategy_index]['selected_date']"
+                           v-if="!liveMode"       
+                           @input="selectStrategyDate(strategy_index)"             
+                           />                           
+                        <FixtureStatPicker v-model="selected_stat" v-if="!liveMode"/>         
                     </div>
                     </section>
                 </b-col>
@@ -47,16 +53,17 @@
             <div class="strategy-body">
               <div
                 class="strategy-play-info mt-4"
-                v-for="fixture in strategy['fixtures']"
+                v-for="(fixture, index) in strategy['fixtures']"
                 :key="fixture.fixture_id"
               >
-                <div 
-                    class="strategy-play-info-header d-flex mb-3"                    
-                    style="justify-content: space-between">
+                <div
+                     v-if="index==0?true:strategies[strategy_index]['fixtures'][index].country_name!==strategies[strategy_index]['fixtures'][index-1].country_name"          
+                     class="strategy-play-info-header d-flex mb-3" 
+                     style="justify-content: space-between">
                   <div class="strategy-play-info-title d-flex" >
                     <span
                       class="flag-icon mr-1"
-                      :class="getFlag(fixture.iso)"                      
+                      :class="getFlag(fixture.iso)"
                     ></span>
                     <span class="ml-2">{{ fixture.country_name }}</span>
                   </div>
@@ -66,7 +73,7 @@
                   <FixtureStatsWrapper
                     :fixture="fixture"
                     :stat="selected_stat"
-                    :scroller="'probability_scroller'"
+                    :scroller="selected_scroller"
                     :liveMode="liveMode"
                     @showstats="showStats(fixture)"
                     @closestats="closeStats"
@@ -74,109 +81,6 @@
                     :statshidden="!show_fixture_details"
                   >
                   </FixtureStatsWrapper>
-                  <!-- <div class="strategy-play-info-item">
-                    <div class="play-time-level">
-                      <span class="mr-3">{{ fixture.time }}</span
-                      ><span>{{ fixture.fixture_name }}</span>
-                    </div>
-                    <div class="play-content">
-                      <div>
-                        <div class="team">
-                          <img
-                            class="team-mark"
-                            v-bind:src="fixture.away_logo"
-                          />
-                          {{ fixture.away_name }}
-                        </div>
-                        <div class="team">
-                          <img
-                            class="team-mark"
-                            v-bind:src="fixture.home_logo"
-                          />
-                          {{ fixture.home_name }}
-                        </div>
-                      </div>
-                      <div class="d-flex">
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">Home Win</span>
-                          <b-button
-                            size="sm"
-                            class="opt-value bg-red"
-                            variant="danger"
-                            >{{
-                              fixture.probability.home_win_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">Draw</span>
-                          <b-button size="sm" class="opt-value bg-orange"
-                            >{{
-                              fixture.probability.draw_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">Away Win</span>
-                          <b-button size="sm" class="opt-value bg-green"
-                            >{{
-                              fixture.probability.away_win_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">BTTS</span>
-                          <b-button size="sm" class="opt-value bg-orange"
-                            >{{
-                              fixture.probability.btts_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">+2.5 Goals</span>
-                          <b-button size="sm" class="opt-value bg-green"
-                            >{{
-                              fixture.probability.o25_goals_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <span class="opt-name">+0.5 Home Goals</span>
-                          <b-button
-                            size="sm"
-                            class="opt-value bg-green"
-                            style="width: 120px"
-                            >{{
-                              fixture.probability.o05_home_goals_probability
-                            }}
-                            %</b-button
-                          >
-                        </div>
-                        <div class="play-info-opt mr-4">
-                          <b-button
-                            size="sm"
-                            class="opt-arrow-btn"
-                            variant="warning"
-                          >
-                            <b-icon icon="arrow-left"></b-icon>
-                          </b-button>
-                          <b-button
-                            size="sm"
-                            class="opt-arrow-btn mt-1"
-                            variant="warning"
-                          >
-                            <b-icon icon="arrow-right"></b-icon>
-                          </b-button>
-                        </div>
-                        <b-button size="lg" class="opt-status">Stats</b-button>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
               </div>
               <div class="d-flex mt-2 mb-5" style="justify-content: center">
@@ -192,7 +96,8 @@
                 <b-button
                   class="footy-button"
                   variant="primary"
-                  @click="viewMore(strategy['id'])"
+                  :disabled="strategy.fixture.length%10==0?false:true"
+                  @click="viewMore(strategy_index)"
                 >
                   <PlusIcon class="icon-left" />
                   <span class="text"> Load More </span>
@@ -217,13 +122,15 @@
           ></b-pagination>
         </div>
       </b-overlay>
+      <FixtureScrollPicker v-model="selected_scroller" />
+      <LoadMore v-if="loading_date_fixtures" />
     </div>
   </GeneralPage>
 </template>
 
 <script>
 import GeneralPage from "~/components/GeneralPage";
-
+import FixtureScrollPicker from "~/components/fixtures-page/FixtureScrollPicker.vue";
 import FixtureStatPicker from "~/components/fixtures-page/FixtureStatPicker.vue";
 import FixtureDatePicker from "~/components/fixtures-page/FixtureDatePicker.vue";
 
@@ -234,12 +141,13 @@ import DeleteIcon from "~/static/icons/dash-lg.svg";
 export default {
   name: "UpComing",
   components: {
+    FixtureScrollPicker,
     GeneralPage,
     HowItWorks,
     PlusIcon,
     DeleteIcon,
     FixtureStatPicker,
-    FixtureDatePicker,
+    FixtureDatePicker,    
   },
   props: {
     msg: String,
@@ -256,40 +164,53 @@ export default {
       fixtures: [],
       loading: true,
       loading_fixtures: false,
+      selected_date: new Date(),
+      selected_scroller: "stats_scroller",
+      date_strategy_id: '',
+      selected_stat: "ft_result",
+      stat: "ft_result",      
+      loading_date_fixtures: true,    
     };
   },
-  mounted() {
+  mounted() {    
     //get UTC Date.
     var date = new Date().toUTCString();
     console.log(date);
     //get the strategy count by user_id
     this.$axios
-      .get("https://footy-amigo-backend.herokuapp.com/api/strategy_count")
+      .get("user/upcoming/strategy_count")
       .then((response) => {
         this.strategy_count = response.data["count"];
+        this.loading_date_fixtures = true;
         //init strategies by current page
         this.$axios
           .get(
-            "https://footy-amigo-backend.herokuapp.com/api/strategies/21/" +
-              this.currentPage
+            "user/upcoming/strategies/21/" +
+              this.currentPage+'/'+this.$moment(this.selected_date.setHours(0,0,0,0)).unix()
           )
-          .then((response) => {
+          .then((response) => {            
             this.strategies = response.data;
           })
           .catch((error) => {
             console.log(error);
             this.errored = true;
           })
-          .finally(() => (this.loading = false));
+          .finally(() => this.loading = false);
       })
       .catch((error) => {
         console.log(error);
         this.errored = true;
       })
-      .finally(() => (this.loading = false));
+      .finally(() => this.loading = false);
   },
+
   methods: {
+    async showStats(fixture) {
+      this.show_fixture_details = true;
+      this.selected_fixture = fixture;
+    },
     getFlag(iso) {
+      this.loading_date_fixtures = false;
       return iso ? "flag-icon-" + iso : "flag-icon-un";
     },
     activeViewLess: function (strategy_id) {
@@ -300,20 +221,38 @@ export default {
       }
       return false;
     },
+    // this function called when datepicker selected.
+    selectStrategyDate(index){    
+      this.date_strategy_id = index;
+      this.getResults(index);
+    },
+
+    getResults(index){                                  
+      this.loading_date_fixtures = true;
+      this.strategies[index]["fixtures"] = [];
+      this.viewMore(index);
+    },
+
+    WithoutTime(dateTime) {
+    var date = new Date(dateTime.getTime());
+    date.setHours(0, 0, 0, 0);
+    return date;
+    },
     /**
      * function that called when page is changed
      *
      */
     changedPage: function () {
       this.loading = true;
+      this.loading_date_fixtures = true;
       //get strategies by user_id and page
       this.$axios
         .get(
-          "https://footy-amigo-backend.herokuapp.com/api/strategies/21/" +
-            this.currentPage
+          "user/upcoming/strategies/21/" +
+            this.currentPage+'/'+this.date_strategy_id==''?this.$moment(new Date()).unix():this.$moment(this.strategies[idx]['selected_date']).unix()
         )
         .then((response) => {
-          this.strategies = response.data;
+          this.strategies = response.data;            
         })
         .catch((error) => {
           console.log(error);
@@ -327,7 +266,7 @@ export default {
      * @param{Number} strategy_id
      */
     viewLess: function (strategy_id) {
-      const idx = this.strategies.findIndex((d) => d.id === strategy_id);
+      const idx = this.strategies.findIndex((d) => d.id === strategy_id);      
       //if the count of fixtures for strategy is more than 20 remove 10 data from the last
       if (this.strategies[idx]["fixtures"].length >= 20) {
         console.log(this.strategies[idx]["view_count"] * 10);
@@ -350,30 +289,33 @@ export default {
      * function for view more
      * @param{Number} strategy_id
      */
-    viewMore: function (strategy_id) {
+    viewMore: function (strategy_index) {
       //active loading
-      this.loading_fixtures = true;
+      if(!this.loading_date_fixtures){
+        this.loading_fixtures = true;
+        this.strategies[strategy_index]["view_count"] =
+        this.strategies[strategy_index]["view_count"] + 1;
+      }      
       //get index by strategy_id
-      const idx = this.strategies.findIndex((d) => d.id === strategy_id);
-      this.strategies[idx]["view_count"] =
-        this.strategies[idx]["view_count"] + 1;
+      // const idx = this.strategies.findIndex((d) => d.id === strategy_id);                
       // get data by strategy_id and view_count.
       this.$axios
-        .post("https://footy-amigo-backend.herokuapp.com/api/fixtures", {
-          strategy_id: strategy_id,
-          view_count: this.strategies[idx]["view_count"],
+        .post("user/upcoming/fixtures", {
+          strategy_id: this.strategies[strategy_index].id,
+          view_count: this.strategies[strategy_index]["view_count"],
+          current_timestamp: this.$moment(this.strategies[strategy_index]['selected_date']).unix()
         })
         .then((response) => {
           //add fixtures to strategy's fixtures
-          this.strategies[idx]["fixtures"] = this.strategies[idx][
+          this.strategies[strategy_index]["fixtures"] = this.strategies[strategy_index][
             "fixtures"
-          ].concat(response.data);
+          ].concat(response.data);            
         })
         .catch((error) => {
           console.log(error);
           this.errored = true;
         })
-        .finally(() => (this.loading_fixtures = false)); //deactive loading
+        .finally(() => (this.loading_fixtures = false, this.loading_date_fixtures = false)); //deactive loading        
     },
   },
 };

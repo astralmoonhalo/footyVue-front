@@ -7,7 +7,7 @@ passport.use(
   new JWTstrategy(
     {
       secretOrKey:
-        "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTYzMTI4MjQ2NCwiaWF0IjoxNjMxMjgyNDY0fQ",
+        "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTYzMTI4MjQ2NCwiaWF0IjoxNjMxMjgyNDY0fQXX",
       jwtFromRequest: ExtractJwt.fromBodyField("token")
         ? ExtractJwt.fromHeader("token")
         : ExtractJwt.fromBodyField("token")

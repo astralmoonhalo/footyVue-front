@@ -187,6 +187,10 @@ Strategy.countForUser = function (user_id, type) {
   return this.query().where({ user_id, type }).resultSize();
 };
 
+Strategy.countActiveForUser = function (user_id, type, active) {
+  return this.query().where({user_id, type, active}).resultSize();
+}
+
 // Strategy.countForUser(1, "in-play").then(x=> console.log(x))
 Strategy.findForMongo = function () {
   return this.query()

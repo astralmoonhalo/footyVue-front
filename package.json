@@ -6,7 +6,7 @@
     "devold": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "dev": "node server",
     "build": "nuxt build",
-    "start": "npm run build \"cross-env NODE_ENV=production node server\"",
+    "start": "cross-env NODE_ENV=production node server",
     "generate": "nuxt generate"
   },
   "dependencies": {

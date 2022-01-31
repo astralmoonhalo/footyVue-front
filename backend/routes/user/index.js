@@ -325,6 +325,7 @@ router.use("/flutterwave", require("./flutterwave"));
 router.use("/fixtures", require("./fixtures"));
 router.use("/picks", require("./picks"));
 router.use("/page-videos", require("./page-videos"));
+router.use("/upcoming",require('./upcoming'));
 
 router.use("/local-countries", require("./local-countries"));
 router.use("/outcomes", require("./outcomes"));

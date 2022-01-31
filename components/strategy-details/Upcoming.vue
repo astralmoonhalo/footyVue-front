@@ -165,6 +165,7 @@ export default {
             params,
           }
         );
+        console.log(fixtures);
         this.loaded = fixtures.length < 50 ? true : false;
         if (!this.loaded) {
           window.scrollBy(0, -300);
