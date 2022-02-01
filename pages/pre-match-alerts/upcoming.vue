@@ -31,7 +31,7 @@
                     {{ loading ? "Loading Strategies..." : strategy["title"] }}
                     </h1>
                     <span class="text-warning strategy-header-description">
-                    {{ loading ? "Just a second please..." : strategy["note"] }}
+                    {{ loading ? "Just a second please..." : "Desired outcome: "+strategy["outcome"].label}}
                     </span>
                 </b-col>
                 <b-col md="6" sm="12">
@@ -89,6 +89,7 @@
                   variant="primary"
                   :disabled="!activeViewLess(strategy['id'])"
                   @click="viewLess(strategy['id'])"
+                  v-if="strategy['fixtures'].length!=0"
                 >
                     <DeleteIcon class="icon-left" />
                     <span class="text"> Load Less </span>
@@ -96,12 +97,16 @@
                 <b-button
                   class="footy-button"
                   variant="primary"
-                  :disabled="strategy.fixture.length%10==0?false:true"
+                  :disabled="strategy['fixtures'].length%10==0?false:true"
                   @click="viewMore(strategy_index)"
+                  v-if="strategy['fixtures'].length!=0"
                 >
                   <PlusIcon class="icon-left" />
                   <span class="text"> Load More </span>
                 </b-button>
+                <span v-if="strategy['fixtures'].length==0" class="strategy-header-description">
+                  No fixture exist.
+                </span>
               </div>
               <div :class="loading_fixtures?'':'hidden'" class="overlay-region" >
                 <b-spinner
@@ -188,7 +193,7 @@ export default {
             "user/upcoming/strategies/21/" +
               this.currentPage+'/'+this.$moment(this.selected_date.setHours(0,0,0,0)).unix()
           )
-          .then((response) => {            
+          .then((response) => {                        
             this.strategies = response.data;
           })
           .catch((error) => {
@@ -233,11 +238,6 @@ export default {
       this.viewMore(index);
     },
 
-    WithoutTime(dateTime) {
-    var date = new Date(dateTime.getTime());
-    date.setHours(0, 0, 0, 0);
-    return date;
-    },
     /**
      * function that called when page is changed
      *

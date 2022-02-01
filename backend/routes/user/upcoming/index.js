@@ -14,17 +14,13 @@ router.get("/strategy_count", async(req, res) => {
         user_id: ObjectId('6181a1476a8b1f99203adb3a'),
         active: true,
         type: "pre-match"
-    }).exec(function(err, count) {
-        console.log('success'+count);
+    }).exec(function(err, count) {     
         res.send({ "count": count });
     });
 });
 
 router.get("/strategies/:id/:page/:timestamp", async(req, res) => {
-    console.log('page', req.params.page);
-    console.log('strategy');
-    console.log('date',req.params.timestamp);
-    
+ 
     let start_timestamp = Number(req.params.timestamp);
 
     let strategyList = [];
@@ -32,25 +28,24 @@ router.get("/strategies/:id/:page/:timestamp", async(req, res) => {
         user_id: ObjectId("6181a1476a8b1f99203adb3a"),
         active: true,
         type: "pre-match"
-    }).select({ "id": 1, "title": 1, "note": 1 }).skip((req.params.page - 1) * 5).limit(5).exec(async function(err, strategies) {
+    }).skip((req.params.page - 1) * 5).limit(5).exec(async function(err, strategies) {
         console.log(1);
         await strategies.forEach(async(d) => {
             const strategy = await Strategy.findOne({ id: d.id });
             const query = fomatter.format(strategy);
-            console.log(Number(start_timestamp)+86400+'-------'+start_timestamp);
+            
             await Fixture.find({timestamp: { 
                 $gte: start_timestamp,
                 $lte: start_timestamp+86400,
-            }} ).find(query).limit(10).exec(function(err, fixtures) {
-                console.log('2');
-                strategyList.push({ "id": d.id, "title": d.title, "note": d.note, "fixtures": fixtures, "view_count": 0, "selected_date": start_timestamp*1000 });
-                if (strategyList.length === strategies.length) {
+            }} ).find(query).limit(10).exec(function(err, fixtures) {                            
+                strategyList.push({ "id": d.id, "title": d.title, "outcome": d.outcome, "fixtures": fixtures, "view_count": 0, "selected_date": start_timestamp*1000 });
+                if (strategyList.length === strategies.length) {                    
                     res.send(strategyList);
+                    console.log('loading successfully');
                 }
             })
 
-        });
-        console.log(3);
+        });        
 
     });
 
@@ -60,8 +55,6 @@ router.get("/strategies/:id/:page/:timestamp", async(req, res) => {
 
 router.post("/fixtures", async(req, res) => {
     let start_timestamp = Number(req.body.current_timestamp);
-    console.log('query');
-    console.log('-----------------------------',req.body.current_timestamp);
     const strategy = await Strategy.findOne({ id: req.body.strategy_id });
     const query = fomatter.format(strategy);
     const fixtures = await Fixture.find({timestamp: { 
@@ -97,8 +90,3 @@ router.post("/fixtures", async(req, res) => {
 
 module.exports = router
 
-
-// .find({'timestamp': { 
-//     $gte:String(start_timestamp),
-//     $lte: String(start_timestamp+86400),
-// }} )

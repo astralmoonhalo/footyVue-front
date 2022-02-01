@@ -13,6 +13,8 @@ const schema = mongoose.Schema({
     type: String,
     user_id: ObjectId,
     fixtures: Array,
+    outcome: Object,
+    
 
 })
 
