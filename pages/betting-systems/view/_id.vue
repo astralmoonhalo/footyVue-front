@@ -49,11 +49,11 @@
 
               <b-button
                 class="import-status"
-                v-if="!imported[preset.id]"
+                v-if="!imported[preset._id]"
                 block
-                @click="promptImport(preset.id)"
-                :disabled="importing[preset.id]"
-                ><template v-if="importing[preset.id]">
+                @click="promptImport(preset._id)"
+                :disabled="importing[preset._id]"
+                ><template v-if="importing[preset._id]">
                   Importing
                   <b-spinner variant="primary" label="Spinning" small>
                   </b-spinner>
@@ -66,7 +66,7 @@
               <b-button v-else class="import-status imported" block>
                 Imported</b-button
               >
-              <!-- <b-overlay :show="importing[preset.id]" class="p-0">
+              <!-- <b-overlay :show="importing[preset._id]" class="p-0">
               </b-overlay> -->
             </div>
           </div>

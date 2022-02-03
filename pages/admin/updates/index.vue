@@ -15,7 +15,7 @@
           <template #cell(completed)="data">
             <footy-switch
               v-model="data.value"
-              @click.native.prevent="toggleUpdate(data.item.id)"
+              @click.native.prevent="toggleUpdate(data.item._id)"
             >
             </footy-switch>
           </template>
@@ -28,11 +28,11 @@
               <b-dropdown-item
                 :to="{
                   name: 'admin-updates-edit-id',
-                  params: { id: data.item.id }
+                  params: { id: data.item._id }
                 }"
                 >Edit</b-dropdown-item
               >
-              <b-dropdown-item @click="deleteUpdate(data.item.id)">
+              <b-dropdown-item @click="deleteUpdate(data.item._id)">
                 <span class="text-danger">Delete </span>
               </b-dropdown-item>
             </b-dropdown>

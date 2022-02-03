@@ -27,7 +27,7 @@ async function createCharge(data) {
     passthrough: { plan_id },
     event_time: created_at,
   } = data;
-  const plan = await Plan.findById(plan_id);
+  const plan = await Plan.findOne({ id: Number(plan_id) });
   return await Transaction.create({
     order_id,
     checkout_id,
@@ -101,10 +101,10 @@ router.post("/", async (req, res) => {
         await SubscriptionDetail.cancel(subscription_id);
         break;
       case "subscription_payment_failed":
-        await Transaction.update(order_id, { status: "failed" });
+        await Transaction.updateData(order_id, { status: "failed" });
         break;
       case "subscription_payment_refunded":
-        await Transaction.update(order_id, { status: "refunded" });
+        await Transaction.updateData(order_id, { status: "refunded" });
         break;
       case "subscription_payment_succeeded":
         await createCharge(req.body);

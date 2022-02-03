@@ -1,20 +1,20 @@
 <template>
   <div class="result">
     <div>
-      <div class="h-4 " v-if="teamName">
-        {{ teamName}}
+      <div class="h-4" v-if="teamName">
+        {{ teamName }}
       </div>
       <div class="h-4" :class="teamWon" v-else>
-        <span>{{result.home_name}}</span>
+        <span>{{ result.home_name }}</span>
         v
-        <span>{{result.away_name}}</span>
+        <span>{{ result.away_name }}</span>
       </div>
       <div class="h-6 text-grey">{{ location }} • {{ result.date }}</div>
     </div>
     <div>
       <div class="score" :class="winlose">
         <div class="h-4">{{ result.home_goals }}:{{ result.away_goals }}</div>
-        <div class="small opacity-7">HT {{result.ht_score||'0-0'}}</div>
+        <div class="small opacity-7">HT {{ result.ht_score || "- -" }}</div>
       </div>
     </div>
   </div>
@@ -31,15 +31,15 @@ export default {
   },
   computed: {
     teamWon() {
-      if(this.result.home_goals == this.result.away_goals) {
-        return ""
-      } else if(this.result.home_goals > this.result.away_goals) {
-        return "homewin"
+      if (this.result.home_goals == this.result.away_goals) {
+        return "";
+      } else if (this.result.home_goals > this.result.away_goals) {
+        return "homewin";
       } else {
-        return "awaywin"
+        return "awaywin";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -50,18 +50,18 @@ export default {
   align-items: center;
   .homewin {
     span:first-child() {
-      color:#60b15a;
+      color: #60b15a;
     }
   }
   .awaywin {
     span:last-child() {
-      color:#60b15a;
+      color: #60b15a;
     }
   }
 }
 .score {
   text-align: center;
-  background: #60685F;
+  background: #60685f;
   border-radius: 4px;
   color: white;
   padding: 5px 12px;

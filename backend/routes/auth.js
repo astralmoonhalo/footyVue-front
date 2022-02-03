@@ -14,6 +14,7 @@ const { AccountActivationCode } = require("@root/db");
 const { body, validationResult } = require("express-validator");
 // username must be an email
 
+//firestore set user_id as 829020 where
 // password must be at least 5 chars long
 function genToken(body) {
   const token = jwt.sign({ user: body }, process.env.AUTHJWT, {
@@ -22,6 +23,10 @@ function genToken(body) {
   return token;
 }
 
+async function checkUserExists(email) {
+  const user = await User.findOne({ email }, { _id: 1 });
+  return user ? true : false;
+}
 router.post(
   "/signup",
   body("firstname").isAlpha().isLength({ min: 3, max: 20 }),
@@ -29,16 +34,33 @@ router.post(
   body("email").isEmail(),
   body("password").isLength({ min: 8 }),
   async (req, res, next) => {
-    const { email, code, firstname } = req.body;
+    const { code, firstname } = req.body;
     const result = validationResult(req);
+    const email = req.body.email.toLowerCase();
     const hasErrors = !result.isEmpty();
+    if (await checkUserExists(email)) {
+      return res.status(401).send({
+        success: false,
+        message: "Email already exists",
+        errors: {
+          errors: [
+            {
+              msg: "Email already exists",
+              param: "exists",
+              value: email,
+              location: "body",
+            },
+          ],
+        },
+      });
+    }
     if (hasErrors) {
       return res
         .status(401)
         .send({ success: false, message: "Invalid Code", errors: result });
     }
     if (!code) {
-      await AccountActivationCode.create({ email, name: firstname });
+      await AccountActivationCode.generateCode({ email, name: firstname });
       return res.send({ success: true, message: "Code sent to email" });
     } else {
       const validation = await AccountActivationCode.validate({
@@ -61,8 +83,8 @@ router.post(
       }
       req.login(user, { session: false }, async (error) => {
         if (error) return next(error);
-        const body = { id: user.id, email: user.email };
-        const token = genToken(body)
+        const body = { _id: user._id, email: user.email, id: user._id };
+        const token = genToken(body);
         const domain = process.env.DOMAIN || "dashboard.footyamigo.com";
         // maxAge: 1000 * 60 * 60 * 24 * 3
         return res
@@ -77,13 +99,13 @@ router.post(
   }
 );
 
-
-
 router.post(
   "/login",
   body("email").isEmail(),
   body("password").isLength({ min: 8 }),
+
   async (req, res, next) => {
+    req.body.email = req.body.email.toLowerCase();
     passport.authenticate("login", async (err, user, info) => {
       try {
         if (err) {
@@ -98,15 +120,16 @@ router.post(
           if (error) return next(error);
           try {
             const body = {
-              id: user.id,
+              _id: user._id,
               email: user.email,
               subscription: user.subscription,
+              id: user._id,
             };
             // const refresh_token = genRefreshToken(body);
             const token = genToken(body);
             console.log(user);
             if (req.headers["token-mode"] == "1") {
-              const uid = user.id + "";
+              const uid = user._id + "";
               const firebaseUser = admin.firestore().collection("users");
               const user_doc = await firebaseUser.doc(uid).get();
               const revoke_time = Math.floor(Date.now() / 1000);
@@ -140,6 +163,7 @@ router.post(
               //   httpOnly: true,
               //   domain,
               // });
+              console.log("login successfull");
               return res
                 .cookie("token", token, {
                   maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -204,8 +228,8 @@ router.post(
 
 router.post("/send-reset-link", async (req, res) => {
   try {
+    req.body.email = req.body.email.toLowerCase();
     const { email } = req.body;
-    console.log(req.body);
     const user = await User.findByEmail(email);
     const token = jwt.sign(
       { email: user.email, hash: user.password },
@@ -216,6 +240,7 @@ router.post("/send-reset-link", async (req, res) => {
       (process.env.BASE_URL || "https://dashboard.footyamigo.com") +
       "/auth/change-password?token=" +
       token;
+    console.log(resetLink)
     await sendTemplateEmail({
       receiverEmail: user.email,
       Template: "FORGOT_PASSWORD",
@@ -240,10 +265,12 @@ router.get("/logout", async (req, res, next) => {
 
 router.post("/change-password", async (req, res) => {
   try {
-    const { password, token } = req.body;
-
-    const { email, hash: oldpassword } = jwt.verify(token, process.env.AUTHJWT);
-    await User.changePassword(email, oldpassword, password);
+    const { password: new_password, token } = req.body;
+    const { email, hash: old_password } = jwt.verify(
+      token,
+      process.env.AUTHJWT
+    );
+    await User.changePassword(email, old_password, new_password);
 
     res.send({ success: true, messsage: "Password Changed" });
     //res.json({ token });

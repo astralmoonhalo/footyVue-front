@@ -126,7 +126,6 @@ export default {
     if (this.isInplay) {
       this.$store.dispatch("fetchInPlayRules");
     }
-    this.$store.commit("setStrategyType", this.strategyType);
     this.$store.dispatch("fetchLeagues").then((x) => {
       if (!this.form.leagues.length) {
         this.form.leagues = x.map((league) => league.value);

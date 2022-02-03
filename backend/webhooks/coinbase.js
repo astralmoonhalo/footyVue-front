@@ -14,7 +14,7 @@ async function createCharge(data) {
     metadata: { user_id, email, plan_id },
     created_at
   } = data;
-  const plan = await Plan.findById(plan_id);
+  const plan = await Plan.findOne({id:Number(plan_id)});
   var payment_method;
   try {
     payment_method = data.payments[data.payments.length].network;

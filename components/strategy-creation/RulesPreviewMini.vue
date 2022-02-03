@@ -1,5 +1,6 @@
 <template>
   <section class="rules-preview-mini">
+    
     <div
       v-for="(setting, index) in strategyPrematch"
       :key="'pre-match-settings ' + index"

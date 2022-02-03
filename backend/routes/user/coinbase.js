@@ -10,9 +10,9 @@ const Charge = coinbase.resources.Charge;
 router.get("/buy-pro", async (req, res) => {
   try {
     const domain = req.protocol + "://" + req.hostname;
-    const user = await User.findById(req.user.user.id);
+    const user = await User.findById(req.user.user._id);
     const plan_id = process.env.PRO_PLAN_ID || 1;
-    const plan = await Plan.findById(plan_id);
+    const plan = await Plan.findOne({id:Number(plan_id)});
     const chargeData = {
       name: "FootyAmigo Pro Subscription",
       description:
@@ -23,7 +23,7 @@ router.get("/buy-pro", async (req, res) => {
       },
       pricing_type: "fixed_price",
       metadata: {
-        user_id: user.id,
+        user_id: user._id,
         email: user.email,
         plan_id
       },

@@ -34,7 +34,7 @@
           @click="nextStep"
           class="footy-button"
           :disabled="nextDisabled"
-              href="#create-strategy"
+          href="#create-strategy"
         >
           Next Step
           <NextIcon />
@@ -50,7 +50,7 @@ export default {
   // scrollToTop: true,
   props: {
     value: Object,
-    category: String
+    category: String,
   },
   data() {
     return {
@@ -59,40 +59,40 @@ export default {
           value: "general",
           text: "General",
           image: "/vectors/general.svg",
-          imgclass: "rules-icon"
+          imgclass: "rules-icon",
         },
         {
           value: "goals",
           text: "Goals",
           image: "/vectors/goals.svg",
-          imgclass: "rules-icon"
+          imgclass: "rules-icon",
         },
-        
+
         {
           value: "streak",
           text: "Streak",
           image: "/vectors/streak.svg",
-          imgclass: "rules-icon"
+          imgclass: "rules-icon",
         },
         {
           value: "half",
           text: "Half",
           image: "/vectors/half.svg",
-          imgclass: "rules-icon"
+          imgclass: "rules-icon",
         },
         {
           value: "corners",
           text: "Corners",
           image: "/vectors/corners.svg",
-          imgclass: "rules-icon"
+          imgclass: "rules-icon",
         },
         {
           value: "odds",
           text: "Odds",
           image: "/vectors/odds.svg",
-          imgclass: "rules-icon"
-        }
-      ]
+          imgclass: "rules-icon",
+        },
+      ],
     };
   },
   computed: {
@@ -102,7 +102,7 @@ export default {
       },
       set(val) {
         this.$emit("input", val);
-      }
+      },
     },
     selectedCategory: {
       get() {
@@ -110,21 +110,20 @@ export default {
       },
       set(val) {
         this.$emit("update:category", val);
-      }
+      },
     },
     nextDisabled() {
       return this.form.title.length == 0;
-    }
+    },
   },
   components: {
-    NextIcon
+    NextIcon,
   },
   methods: {
     nextStep() {
       this.$emit("nextstep");
-      this.$store.commit("addStep");
-    }
-  }
+    },
+  },
 };
 </script>
 

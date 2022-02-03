@@ -35,7 +35,7 @@ router.post("/edit", async (req, res) => {
 router.get("/delete/", async (req, res) => {
   try {
     var { id } = req.query;
-    await Plan.deleteByAdmin(id);
+    await Plan.deleteById(id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);

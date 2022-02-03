@@ -1,43 +1,41 @@
-const { Model } = require("objection");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-class Plan extends Model {
-  static get tableName() {
-    return "plans";
-  }
-}
+const PlanSchema = new Schema(
+  {
+    id: { type: Number, unique: true },
+    name: { type: Number, required: true },
+    price: { type: Number, required: true },
+    days: { type: Number, required: true },
+    trial: { type: Boolean, required: true, default: true },
+  },
+  { strict: false }
+);
+const Plan = mongoose.model("Plan", PlanSchema);
 
-Plan.findForAdmin = function() {
-  return this.query();
+Plan.findForAdmin = function () {
+  return this.find();
 };
 
-Plan.findById = function(id) {
-  return this.query().findById(id);
-};
-
-Plan.deleteByAdmin = function(id) {
-  return this.query().deleteById(id);
-};
-
-Plan.createByAdmin = function(body) {
+Plan.createByAdmin = function (body) {
   var { name, price, days, trial } = body;
-  return this.query().insert({
+  return this.create({
     name,
     price,
     days,
-    trial
+    trial,
   });
 };
 
-Plan.editByAdmin = function(body) {
-  var { id, name, price, days, trial } = body;
-  return this.query()
-    .update({
-      name,
-      price,
-      days,
-      trial
-    })
-    .where("id", id);
+// Plan.create({ name: "Demo" }).then(x=> console.log("HIT", x));
+Plan.editByAdmin = function (body) {
+  var { _id, name, price, days, trial } = body;
+  return this.findByIdAndUpdate(_id, {
+    name,
+    price,
+    days,
+    trial,
+  });
 };
 
 module.exports = Plan;

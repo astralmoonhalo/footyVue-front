@@ -15,6 +15,7 @@ import CreateStrategy from "@/components/strategy-creation/CreateStrategy";
 function initialPreMatchForm() {
   return {
     id: null,
+    _id: null,
     title: "",
     strategy_prematch_rules: [],
     strategy_inplay_rules: [],

@@ -141,7 +141,7 @@ export default {
     },
     shareLink() {
       if (this.filter) {
-        return `https://dashboard.footyamigo.com/s/${this.filter.slug}/${this.filter.id}`;
+        return `https://dashboard.footyamigo.com/s/${this.filter.slug}/${this.filter._id}`;
       }
     }
   }

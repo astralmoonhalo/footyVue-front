@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   // console.log("index, strategues", req.query);
   const type = types[req.query.type];
   //const { } = req.params;
-  const user_id = req.user.user.id;
+  const user_id = req.user.user._id;
   const [total, strategies] = await Strategy.findAll(
     type,
     user_id,
@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
 
 router.get("/strike-rates", async (req, res) => {
   try {
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const user_stategies = await Strategy.getUserStrategies(user_id);
     const other_stategies = await Strategy.getOtherStrategies(user_id);
     res.json({
@@ -46,7 +46,7 @@ router.post("/exclude-league/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { league_id } = req.body;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
 
     await Strategy.excludeLeague(id, user_id, league_id);
     res.send({ success: true });
@@ -60,7 +60,7 @@ router.post("/update-leagues/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { leagues } = req.body;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     if (leagues.length > 2000) {
       return res.status(404).send({ message: "Not found" });
     }
@@ -76,7 +76,7 @@ router.post("/update-leagues/:id", async (req, res) => {
 router.post("/trust/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     await Strategy.trust(id, user_id);
     res.send({ success: true });
   } catch (err) {
@@ -88,7 +88,7 @@ router.post("/trust/:id", async (req, res) => {
 router.post("/untrust/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     await Strategy.untrust(id, user_id);
     res.send({ success: true });
   } catch (err) {
@@ -100,23 +100,8 @@ router.post("/untrust/:id", async (req, res) => {
 router.post("/toggle-active/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const strategy = await Strategy.toggle(id, user_id);
-
-    try {
-      if (strategy.type == "pre-match") {
-        if (!strategy.active) {
-          const user = await User.findById(user_id);
-          //schedulePreMatchAlerts(strategy, user);
-        } else {
-          //const cancelled = await cancelScheduledAlerts(strategy.id);
-          //console.log(cancelled, "Alerts cancelled");
-        }
-      }
-    } catch (error) {
-      console.log(error, "Error wehn toggling strategy");
-    }
-
     res.send(strategy);
   } catch (err) {
     console.error(err);
@@ -127,7 +112,7 @@ router.post("/toggle-active/:id", async (req, res) => {
 router.post("/clone/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const strategy = await Strategy.import(id, user_id);
     res.send({ strategy, success: true });
   } catch (err) {
@@ -139,7 +124,7 @@ router.post("/clone/:id", async (req, res) => {
 router.post("/import/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const strategy = await Strategy.import(id, user_id);
     res.send(strategy);
   } catch (err) {
@@ -151,8 +136,8 @@ router.post("/import/:id", async (req, res) => {
 router.post("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
-    await Strategy.deleteById(id, user_id);
+    const user_id = req.user.user._id;
+    await Strategy.deleteByStrategyId(id, user_id);
     res.send({ success: true, message: "Strategy deleted" });
   } catch (err) {
     console.error(err);
@@ -163,7 +148,7 @@ router.post("/delete/:id", async (req, res) => {
 router.post("/update-hitrate/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     await Strategy.updateHitrate(id, user_id);
     res.send({ success: true, message: "Strategy deleted" });
   } catch (err) {
@@ -175,8 +160,8 @@ router.post("/update-hitrate/:id", async (req, res) => {
 router.get("/id", async (req, res) => {
   try {
     const { id } = req.query;
-    const user_id = req.user.user.id;
-    const strategy = await Strategy.findById(id, user_id);
+    const user_id = req.user.user._id;
+    const strategy = await Strategy.findByStrategyId(id, user_id);
     res.json(strategy);
   } catch (err) {
     console.error(err);

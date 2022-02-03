@@ -44,7 +44,7 @@
           <template #cell(active)="data">
             <footy-switch
               v-model="data.value"
-              @click.native.prevent="togglePageVideo(data.item.id)"
+              @click.native.prevent="togglePageVideo(data.item._id)"
             >
             </footy-switch>
           </template>
@@ -57,7 +57,7 @@
               <b-dropdown-item @click="toggleShowEdit(data.index)"
                 >Edit</b-dropdown-item
               >
-              <b-dropdown-item @click="deletePageVideo(data.item.id)">
+              <b-dropdown-item @click="deletePageVideo(data.item._id)">
                 <span class="text-danger">Delete </span>
               </b-dropdown-item>
             </b-dropdown>

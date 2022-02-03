@@ -4,7 +4,7 @@ const { BettingSystem, Strategy } = require("@root/db");
 
 router.get("/", async (req, res) => {
   try {
-    const betting_systems = await BettingSystem.findForAdmin();
+    const betting_systems = await BettingSystem.find();
     res.json(betting_systems);
   } catch (error) {
     console.error(error);
@@ -26,7 +26,7 @@ router.get("/toggle-active/", async (req, res) => {
 router.get("/delete/", async (req, res) => {
   try {
     var { id } = req.query;
-    await BettingSystem.deleteByAdmin(id);
+    await BettingSystem.findByIdAndDelete(id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);

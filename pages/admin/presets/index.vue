@@ -18,7 +18,7 @@
         <template #cell(active)="data">
           <footy-switch
             v-model="data.value"
-            @click.native.prevent="toggleActiveStatus(data.item.id)"
+            @click.native.prevent="toggleActiveStatus(data.item._id)"
           >
           </footy-switch>
         </template>
@@ -26,7 +26,7 @@
         <template #cell(is_public)="data">
           <footy-switch
             v-model="data.value"
-            @click.native.prevent="togglePublicByAdmin(data.item.id)"
+            @click.native.prevent="togglePublicByAdmin(data.item._id)"
           >
           </footy-switch>
         </template>
@@ -34,7 +34,7 @@
         <template #cell(is_preset)="data">
           <footy-switch
             v-model="data.value"
-            @click.native.prevent="togglePresetByAdmin(data.item.id)"
+            @click.native.prevent="togglePresetByAdmin(data.item._id)"
           >
           </footy-switch>
         </template>
@@ -51,10 +51,10 @@
 
               <span class="material-icons-outlined"> expand_more </span>
             </template>
-            <b-dropdown-item @click="untrustStrategy(data.item.id)"
+            <b-dropdown-item @click="untrustStrategy(data.item._id)"
               >Testing</b-dropdown-item
             >
-            <b-dropdown-item @click="trustStrategy(data.item.id)"
+            <b-dropdown-item @click="trustStrategy(data.item._id)"
               >Trusted</b-dropdown-item
             >
           </b-dropdown>
@@ -81,7 +81,7 @@ export default {
       strategyType: "in-play-alerts",
       strategyTypes: [
         { value: "in-play-alerts", text: "In Play Presets" },
-        { value: "pre-match-alerts", text: "Pre Match Presets" }
+        { value: "pre-match-alerts", text: "Pre Match Presets" },
       ],
       page: 1,
       loaded: false,
@@ -93,9 +93,8 @@ export default {
         "is_preset",
         "hit_rate",
         "trusted",
-        "actions",
-        "active"
-      ]
+        "active",
+      ],
     };
   },
   watch: {
@@ -104,7 +103,7 @@ export default {
       this.loaded = false;
       this.page = 1;
       this.fetchStrategies();
-    }
+    },
   },
   beforeMount() {
     this.fetchStrategies();
@@ -117,7 +116,7 @@ export default {
 
         var strategies = await this.$axios.fetchAdminStrategies({
           type: this.strategyType,
-          page: this.page
+          page: this.page,
         });
         this.page += 1;
         this.strategies.push(...strategies);
@@ -155,8 +154,8 @@ export default {
     async togglePublicByAdmin(id) {
       await this.$axios.togglePublicByAdmin(id);
       this.fetchStrategies();
-    }
-  }
+    },
+  },
 };
 </script>
 

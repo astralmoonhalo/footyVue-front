@@ -17,7 +17,7 @@ const client = new PaddleSDK(
 router.get("/buy-pro", async (req, res) => {
   try {
     const domain = req.protocol + "://" + req.hostname;
-    const user = await User.findById(req.user.user.id);
+    const user = await User.findById(req.user.user._id);
     const chargeData = {
       //title: "FootyAmigo Pro Subscription",
       product_id: process.env.PADDLE_PRO_ID,

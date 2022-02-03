@@ -18,31 +18,9 @@
           class="event-playgroun-icon"
           v-if="getIcon(event.type)"
         ></component>
-        <!-- @click="selectEvent(event)" -->
-        <!-- :class="selectedId == event.id ? 'selected-event' : ''" -->
       </div>
     </MomentumChart>
-    <!-- <h6 class="centered text-primary">{{ selectedEvent }}</h6> -->
   </div>
-
-  <!-- <div class="playground" :style="progressStyle" v-if="events">
-    <DividerIcon class="playground-divider" />
-    <div
-      v-for="(event, index) in events"
-      :key="index"
-      :class="
-        event.team_id == fixture.home_id
-          ? 'playground-event-home'
-          : 'playground-event-away'
-      "
-      :style="{ left: getPosition(event.minute) }"
-    >
-      <component
-        :is="getIcon(event.type)"
-        v-if="getIcon(event.type)"
-      ></component>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -158,8 +136,10 @@ export default {
 
 .selected-event {
 }
-.event-playgroun-icon:hover, .event-playgroun-icon:active, .event-playgroun-icon:focus {
-  transform: scale(1.4)
+.event-playgroun-icon:hover,
+.event-playgroun-icon:active,
+.event-playgroun-icon:focus {
+  transform: scale(1.4);
 }
 .playground-event-away {
   position: absolute;

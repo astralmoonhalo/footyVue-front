@@ -7,7 +7,7 @@ router.get("/:market", async (req, res) => {
   try {
     const { market } = req.params;
 
-    const { subscription } = await User.findById(req.user.user.id);
+    const { subscription } = await User.findById(req.user.user._id);
     const streak = await Fixture.fetchStreaks(
       market,
       !subscription || subscription.trial

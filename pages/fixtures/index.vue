@@ -90,7 +90,7 @@
                 </template>
                 <template v-else>
                   <b-list-group-item class="vishal-search-box-item">
-                    <div class="">No Results!</div>
+                    <div class="">No Results !</div>
                   </b-list-group-item>
                 </template>
               </b-list-group>

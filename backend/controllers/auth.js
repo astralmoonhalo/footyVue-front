@@ -7,7 +7,7 @@ passport.use(
   new JWTstrategy(
     {
       secretOrKey:
-        "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTYzMTI4MjQ2NCwiaWF0IjoxNjMxMjgyNDY0fQXX",
+        "eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTYzMTI4MjQ2NCwiaWF0IjoxNjMxMjgyNDY0fQ",
       jwtFromRequest: ExtractJwt.fromBodyField("token")
         ? ExtractJwt.fromHeader("token")
         : ExtractJwt.fromBodyField("token")
@@ -33,7 +33,7 @@ passport.use(
     async (req, email, password, done) => {
       try {
         const { firstname, lastname, utcoffset, locale } = req.body;
-        const user = await User.create({
+        const user = await User.signup({
           email,
           password,
           firstname,

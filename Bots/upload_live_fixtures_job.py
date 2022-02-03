@@ -11,7 +11,7 @@ from sportmonks import SportMonksAPI
 import certifi
 ca = certifi.where()
 
-formatter = FixtureFormatter(is_live=True)
+
 client = MongoClient(MONGO_URL, tlsCAFile=ca)
 
 database = client.footyamigo
@@ -21,6 +21,7 @@ nan = None
 
 def upload_fixture(fixture):
     try:
+        formatter = FixtureFormatter(is_live=True)
         formatted_fixture = eval(str(formatter.format(fixture)))
         fixture_id = fixture.get("id")
         fixtures_col.update_one(

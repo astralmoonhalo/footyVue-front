@@ -1,42 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const moment = require("moment");
-const { Country, Fixture } = require("../../../db");
-// const { Op } = require("sequelize");
-const fs = require("fs");
-
-async function fetchFixturesByDate(date) {
-  const beginTime = moment(date, "YYYY-MM-DD").startOf("day").unix();
-  const endTime = moment(date, "YYYY-MM-DD").endOf("day").unix();
-  let countries = await Country.findAll({
-    where: {},
-    attributes: ["name", "id", ["iso2", "iso"]],
-
-    include: [
-      {
-        model: Fixture,
-        as: "fixtures",
-        where: { timestamp: { [Op.gte]: beginTime, [Op.lte]: endTime } },
-        attributes: ["id", "country_id", "timestamp"],
-      },
-    ],
-  });
-  const countries_obj = {};
-  for (var country of countries) {
-    country = country.toJSON();
-    const fixture_ids = country.fixtures.map((fixture) => fixture.id);
-    const data = {
-      ...country,
-      fixture_ids,
-      fixtures: [],
-      hidden: false,
-    };
-    countries_obj[country.id] = data;
-  }
-
-  return countries_obj;
-}
-
+const {  Fixture } = require("../../../db");
 router.get("/", async (req, res) => {
   try {
     const date = req.query.date || moment.utc().format("YYYY-MM-DD");

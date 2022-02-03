@@ -170,7 +170,7 @@ export default {
     }
   },
   mounted() {
-    //this.getFilter(this.id);
+
     this.included_ids = this.$jsonify(this.filter.leagues);
     //this.$store.dispatch("fetchLeagues");
     this.getLeagues();

@@ -4,7 +4,7 @@
       {{ "" }}
     </template>
     <template v-slot:howItWorks>
-      <HowItWorks location="betting-systems"  />
+      <HowItWorks location="betting-systems" />
     </template>
     <hr class="betting-systems-hr" />
     <div class="footy-page-container">
@@ -12,7 +12,9 @@
         <nuxt-link
           class="betting-systems-card"
           :class="$store.getters.isPro ? '' : 'is-trial'"
-          :to="$store.getters.isPro ? '/betting-systems/view/'+system.id : '#'"
+          :to="
+            $store.getters.isPro ? '/betting-systems/view/' + system._id : '#'
+          "
           v-for="(system, i) in betting_systems"
           :key="i"
         >
@@ -25,7 +27,7 @@
               <h6
                 class="mb-3 text-grey text-justify betting-systems-description"
               >
-                {{ system.description  | truncate}}
+                {{ system.description | truncate }}
               </h6>
 
               <b-button block class="betting-systems-roi">
@@ -33,7 +35,7 @@
               </b-button>
             </div>
 
-            <div class="bg-image "></div>
+            <div class="bg-image"></div>
             <div class="show-upgrade">
               <b-img
                 class="img mb-4"
@@ -43,9 +45,7 @@
                 width="85"
               >
               </b-img>
-              <h1 class="header-size-1">
-                Pro Subscription
-              </h1>
+              <h1 class="header-size-1">Pro Subscription</h1>
 
               <h6 class="text-grey mb-1">
                 Upgrade to Pro version to see the content
@@ -69,13 +69,13 @@
 export default {
   data() {
     return {
-      pageTitle: "Betting Systems",
+      pageTitle: "Betting Sytems",
       pageDescription:
         "Any successful football bettor has a system they follow. We have spent time creating these profitable, rigorously tested betting systems for our users. The systems below require discipline, patience an active Footy Amigo subscription.",
       systems: [],
       loading: false,
 
-      demo_systems: []
+      demo_systems: [],
     };
   },
   mounted() {
@@ -87,14 +87,14 @@ export default {
         title: "The Under X In-Play System Earner",
         description:
           "Tested with over 600 bets and profitable since day 1, the Under-X In-Plusing FootyStats' goal stats to absolutely minimize losing chance on an Under-X In-Play bet. Repeat multiple wins to build a big, profit over-time. This one takes patience.  This one takes patienceThis one takes patienceThis one takes patienceThis one takes patience This one takes patience. This one takes patience.This one takes patience.",
-        roi: 300
+        roi: 300,
       };
       if (this.loading) {
         return Array(6).fill(demo_system);
       } else {
         return this.systems;
       }
-    }
+    },
   },
   methods: {
     viewSystem(id) {
@@ -110,8 +110,8 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

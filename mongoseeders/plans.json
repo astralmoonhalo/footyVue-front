@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Pro Subscription",
+    "price": 24.99,
+    "days": 30,
+    "trial": 0
+  },
+  {
+    "id": 2,
+    "name": "Free Trial",
+    "price": 0,
+    "days": 7,
+    "trial": 1
+  }
+]

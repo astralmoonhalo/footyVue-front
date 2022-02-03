@@ -43,7 +43,7 @@ import PreMatchRuleEditor from "./PreMatchRuleEditor.vue";
 import LivePreview from "./LivePreview";
 function initialPreMatchSetting() {
   return {
-    rule_id: 2,
+    rule_id: "61ee94f00a8dcd4cc1bfc653",
     values: [0, 6],
     comparator: "=",
     value: 1,
@@ -97,20 +97,14 @@ export default {
     LivePreview,
   },
   watch: {
-    // setting: {
-    //   deep: true,
-    //   handler(val) {
-    //     this.$store.commit("setSetting", val);
-    //   },
-    // },
     selectedCategory: {
       immediate: true,
       handler() {
         const rules = this.filteredPrematchRules;
 
         if (rules) {
-          const { id, min, max } = rules[0];
-          Object.assign(this.setting, { values: [min, max], rule_id: id });
+          const { _id, min, max } = rules[0];
+          Object.assign(this.setting, { values: [min, max], rule_id: _id });
         }
       },
     },
@@ -134,7 +128,7 @@ export default {
     },
     prematchRulesOptions() {
       return this.filteredPrematchRules.map((rule) => {
-        const { id: value, label: text } = rule;
+        const { _id: value, label: text } = rule;
         return {
           value,
           text,

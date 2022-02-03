@@ -76,7 +76,7 @@
         <b-spinner variant="primary" v-if="loading"></b-spinner>
       </div-->
     </MugenScroll>
-    <h4 v-if="!loading && loaded && !showUpgrade" class="centered text-grey">
+    <h4 v-if="!loading && loaded" class="centered text-grey">
       <template v-if="fixtures.length"> No more results ! </template>
       <template v-else>
         No fixtures that meets your rules were found for this day, try another
@@ -148,9 +148,9 @@ export default {
     },
     async getResults() {
       try {
-        if (this.$store.getters.subscriptionType == "trial") {
-          return this.showDemoToExpired();
-        }
+        // if (this.$store.getters.subscriptionType == "trial") {
+        //   return this.showDemoToExpired();
+        // }
         this.loading = true;
 
         const params = {
@@ -165,7 +165,6 @@ export default {
             params,
           }
         );
-        console.log(fixtures);
         this.loaded = fixtures.length < 50 ? true : false;
         if (!this.loaded) {
           window.scrollBy(0, -300);

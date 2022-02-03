@@ -1,111 +1,330 @@
-const { Model, raw } = require("objection");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const fs = require("fs");
+const { ObjectId } = require("mongoose").Types;
+// rule_id
+// :
+// 60
+// values
+// :
+// Array
+// comparator
+// :
+// "="
+// value
+// :
+// 1
+// team
+// :
+// "home"
+// location
+// :
+// "home"
+const PreMatchRuleSchema = new Schema(
+  {
+    rule_id: { type: ObjectId, ref: "Rule" },
+    rule: { type: Object },
+    values: { type: Array },
+    comparator: { type: String },
+    value: { type: Number },
+    team: { type: String },
+    location: { type: String },
+  },
+  {
+    strict: false,
+    // timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
+);
 
-const MongoStrategy = require("../mongomodels/Strategy");
-const MongoFixture = require("../mongomodels/Fixture");
-const Pick = require("../mongomodels/Pick");
+const InPlayRuleSchema = new Schema(
+  {
+    first_rule_id: { type: ObjectId, ref: "Rule" },
+    second_rule_id: { type: ObjectId, ref: "Rule" },
+    first_code: { type: String },
+    second_code: { type: String },
+    first_category: { type: String },
+    second_category: { type: String },
+    first_subcategory: { type: String },
+    second_subcategory: { type: String },
+    comparator: { type: String },
+    value: { type: Number },
+    odds_value: { type: Number },
+    first_team: { type: String },
+    second_team: { type: String },
+    timer: { type: Object },
+  },
+  {
+    strict: false,
+    // timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
+);
+
+const StrategySchema = new Schema(
+  {
+    active: { type: Boolean, index: true },
+    is_preset: { type: Boolean, index: true, default: false },
+    is_public: { type: Boolean, index: true, default: false },
+    user_id: { type: Number, index: true },
+    user_id: { type: ObjectId, index: true },
+    _user: { type: Object },
+    trusted: { type: Boolean, default: false },
+    active: { type: Boolean, default: true },
+    type: { type: String, index: true },
+    outcome_id: { type: ObjectId, index: true },
+    outcome: { type: Object },
+    preset_id: { type: ObjectId, index: true },
+    strategy_prematch_rules: [PreMatchRuleSchema],
+    strategy_inplay_rules: [InPlayRuleSchema],
+    title: String,
+    note: String,
+    timer: Object,
+    leagues: Array,
+    hit_rate: { type: Number, default: 0.0 },
+    strike_rate: { type: Number, default: 0.0 },
+    fixtures_found: { type: Number, default: 0 },
+    picks_sent: { type: Number, default: 0 },
+    last_checked: { type: Date },
+  },
+  {
+    strict: false,
+    // toJSON: { virtuals: true },
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
+);
+
+const Strategy = mongoose.model("Strategy", StrategySchema);
+
+const Outcome = require("./Outcome");
+
+// Strategy.updateMany(
+//   { user_id: 1 },
+//   { $set: { user_id: "6181a1476a8b1f99203adb36" } }
+// ).then((masti) => console.log(masti));
+
+const Pick = require("./Pick");
+const User = require("./User");
+const Rule = require("./Rule");
 const uuid = require("uuid");
 const axios = require("axios");
-const { where } = require("../mongomodels/Fixture");
 
-class Strategy extends Model {
-  static get tableName() {
-    return "strategies";
-  }
-  static get jsonAttributes() {
-    return ["timer", "leagues"];
-  }
+// Strategy.findByStrategyId = function(filter_id, page = 1) {
+//   return this.find({
+//     user_id
+//   })
+//     .sort({ created_at: -1 })
+//     .limit(limit);
+// };
 
-  static get relationMappings() {
-    // Importing models here is a one way to avoid require loops.
-    const User = require("./User");
-    const PreMatchStrategyRule = require("./PreMatchStrategyRule");
-    const InPlayStrategyRule = require("./InPlayStrategyRule");
-    const Outcome = require("./Outcome");
+const strategy_public_fields = {
+  id: 1,
+  slug: 1,
+  title: 1,
+  is_public: 1,
+  is_preset: 1,
+  timer: 1,
+  note: 1,
+  type: 1,
+  picks_sent: 1,
+  hit_rate: 1,
+  strike_rate: 1,
+  outcome: 1,
+  outcome_id: 1,
+  leagues: 1,
+  trusted: 1,
+  preset_id: 1,
+  active: 1,
+  user_id: 1,
+};
+
+const strategy_admin_fields = {
+  id: 1,
+  title: 1,
+  is_public: 1,
+  is_preset: 1,
+  timer: 1,
+  note: 1,
+  picks_sent: 1,
+  fixtures_found: 1,
+  type: 1,
+  hit_rate: 1,
+  strike_rate: 1,
+  outcome_id: 1,
+  outcome: 1,
+  leagues: 1,
+  trusted: 1,
+  active: 1,
+  user_id: 1,
+  preset_id: 1,
+  created_at: 1,
+  updated_at: 1,
+};
+
+function formatPreMatchRules(strategy) {
+  return strategy.toObject().strategy_prematch_rules.map((x) => {
+    const { code, category, overall, home, label, away, direct } = x.rule_id;
     return {
-      user: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: User,
-        join: {
-          from: "strategies.user_id",
-          to: "users.id",
-        },
-      },
-
-      outcome: {
-        relation: Model.HasOneRelation,
-        modelClass: Outcome,
-        join: {
-          from: "strategies.outcome_id",
-          to: "outcomes.id",
-        },
-      },
-      strategy_prematch_rules: {
-        relation: Model.HasManyRelation,
-        modelClass: PreMatchStrategyRule,
-        join: {
-          from: "strategies.id",
-          to: "strategy_prematch_rules.strategy_id",
-        },
-      },
-      strategy_inplay_rules: {
-        relation: Model.HasManyRelation,
-        modelClass: InPlayStrategyRule,
-        join: {
-          from: "strategies.id",
-          to: "strategy_inplay_rules.strategy_id",
-        },
-      },
+      ...x,
+      rule_id: x.rule_id._id,
+      code,
+      category,
+      overall,
+      home,
+      label,
+      away,
+      direct,
     };
-  }
+  });
 }
-const strategy_public_fields = [
-  "id",
-  "slug",
-  "title",
-  "is_public",
-  "is_preset",
-  "timer",
-  "note",
-  "type",
-  "picks_sent",
-  "hit_rate",
-  "strike_rate",
-  "outcome_id",
-  "leagues",
-  "trusted",
-  "preset_id",
-  "active",
-  "user_id",
-];
 
-const strategy_admin_fields = [
-  "id",
-  "title",
-  "is_public",
-  "is_preset",
-  "timer",
-  "note",
-  "picks_sent",
-  "fixtures_found",
-  "type",
-  "hit_rate",
-  "strike_rate",
-  "outcome_id",
-  "leagues",
-  "trusted",
-  "active",
-  "user_id",
-  "preset_id",
-  "created_at",
-  "updated_at",
-];
+function formatInPlayRules(strategy) {
+  return strategy.toObject().strategy_inplay_rules.map((x) => {
+    return {
+      ...x,
+      first_code: x.first_rule_id.code,
+      second_code: x.second_rule_id ? x.second_rule_id.code : null,
+      first_rule_id: x.first_rule_id._id,
+      second_rule_id: x.second_rule_id ? x.second_rule_id._id : null,
+    };
+  });
+}
 
-// function formatStrategy(strategy) {
-//   //console.log(strategy.outcomes);
-//   if (!strategy.outcomes )
-//   strategy.outcomes = strategy.outcomes["outcome_id"];
-//   return strategy;
-// }
+Strategy.createOrUpdate = async function (body, type, user_id, preset_id) {
+  var {
+    _id,
+    title,
+    strategy_prematch_rules,
+    strategy_inplay_rules,
+    outcome_id,
+    is_public,
+    timer,
+    note,
+    leagues,
+  } = body;
+  user_id = ObjectId(user_id);
+  if (type === "in-play" && !strategy_inplay_rules.length) {
+    throw new Error("Strategy in-play rules are required");
+  }
+  if (type === "pre-match" && !strategy_prematch_rules.length) {
+    throw new Error("Strategy prematch rules are required");
+  }
+
+  const outcome = await Outcome.findById(outcome_id);
+  const user = await User.findById(user_id, {
+    _id: 1,
+    email: 1,
+    firstname: 1,
+    lastname: 1,
+    utcoffset: 1,
+    locale: 1,
+    id: 1,
+    subscription: 1,
+    phone: 1,
+  });
+  const session = await Strategy.startSession();
+  return await session.withTransaction(async () => {
+    var strategy;
+    if (_id) {
+      strategy = await Strategy.findOneAndUpdate(
+        { _id, user_id },
+        {
+          title,
+          is_public,
+          strategy_prematch_rules,
+          strategy_inplay_rules,
+          timer,
+          note,
+          leagues,
+          type,
+          outcome,
+          user,
+          outcome_id,
+        },
+        { new: true, upsert: true }
+      );
+    } else {
+      strategy = await Strategy.create({
+        title,
+        is_public,
+        timer,
+        note,
+        strategy_prematch_rules,
+        strategy_inplay_rules,
+        leagues,
+        type,
+        user,
+        outcome,
+        outcome_id,
+        preset_id,
+        user_id,
+        slug: uuid.v4(),
+      });
+    }
+    await strategy.populate("strategy_prematch_rules.rule_id");
+    strategy.strategy_prematch_rules = formatPreMatchRules(strategy);
+    if (type == "in-play") {
+      await strategy.populate("strategy_inplay_rules.first_rule_id");
+      await strategy.populate("strategy_inplay_rules.second_rule_id");
+      strategy.strategy_inplay_rules = formatInPlayRules(strategy);
+    }
+    await strategy.save();
+    return strategy;
+  });
+};
+
+Strategy.seedRestore = async function (body, type, user_id) {
+  var { _id, strategy_prematch_rules, strategy_inplay_rules, outcome_id } =
+    body;
+  user_id = ObjectId(user_id);
+  if (type === "in-play" && !strategy_inplay_rules.length) {
+    throw new Error("Strategy in-play rules are required");
+  }
+  if (type === "pre-match" && !strategy_prematch_rules.length) {
+    throw new Error("Strategy prematch rules are required");
+  }
+
+  const outcome = await Outcome.findById(outcome_id);
+  const user = await User.findById(user_id, {
+    _id: 1,
+    email: 1,
+    firstname: 1,
+    lastname: 1,
+    utcoffset: 1,
+    locale: 1,
+    id: 1,
+    subscription: 1,
+    phone: 1,
+  });
+  const session = await Strategy.startSession();
+  return await session.withTransaction(async () => {
+    var strategy;
+    if (_id) {
+      strategy = await Strategy.findOneAndUpdate(
+        { _id, user_id },
+        {
+          ...body,
+          user,
+          outcome,
+        },
+        { new: true, upsert: true }
+      );
+    } else {
+      strategy = await Strategy.create({
+        ...body,
+        user,
+        outcome,
+      });
+    }
+    await strategy.populate("strategy_prematch_rules.rule_id");
+    strategy.strategy_prematch_rules = formatPreMatchRules(strategy);
+    if (type == "in-play") {
+      await strategy.populate("strategy_inplay_rules.first_rule_id");
+      await strategy.populate("strategy_inplay_rules.second_rule_id");
+      strategy.strategy_inplay_rules = formatInPlayRules(strategy);
+    }
+    await strategy.save();
+    return strategy;
+  });
+};
 
 Strategy.reschedule = async function (strategy_id) {
   try {
@@ -118,229 +337,33 @@ Strategy.reschedule = async function (strategy_id) {
   }
 };
 
-Strategy.findById = async function (id, user_id, user_is_pro = false) {
-  var strategy = await this.query()
-    .findOne({
-      id,
-      user_id,
-    })
-    .orWhere(function () {
-      const condition = this.where({ id });
-
-      return user_is_pro ? condition : condition.where({ is_public: true });
-    })
-    .withGraphFetched("strategy_prematch_rules")
-    .withGraphFetched("strategy_inplay_rules")
-    .withGraphFetched({
-      outcome: {
-        $modify: ["includeRule"],
-      },
-    })
-    //.withGraphFetched("outcomes")
-    .select(...strategy_public_fields);
-  return strategy;
-};
-
-// Strategy.query()
-//   .select("id")
-//   .then(strategies => {
-//     strategies = strategies.map(x => x.id);
-//     console.log(strategies);
-//     MongoStrategy.deleteMany({ id: { $nin: strategies } }).then(mongos => {
-//       console.log(mongos);
-//     });
-//   });
-// Strategy.findPublicById = async function(id) {
-//   var strategy = await this.query()
-//     .findOne({
-//       id,
-//       is_public: true
-//     })
-//     .withGraphFetched("strategy_prematch_rules")
-//     .withGraphFetched("strategy_inplay_rules")
-//     .withGraphFetched({
-//       outcome: {
-//         $modify: ["includeRule"]
-//       }
-//     })
-//     //.withGraphFetched("outcomes")
-//     .select(...strategy_public_fields);
-//   return strategy;
-// };
-
-// Strategy.findById = async function(slug, user_id) {
-//   var strategy = await this.query()
-//     .findOne({
-//       slug
-//     })
-//     .where(function() {
-//       this.where({ user_id }).orWhere({ is_public: true });
-//     })
-//     .withGraphFetched("strategy_prematch_rules")
-//     .withGraphFetched("strategy_inplay_rules")
-//     //.withGraphFetched("outcomes")
-//     .select(...strategy_public_fields);
-//   return strategy;
-// };
-
-Strategy.countForUser = function (user_id, type) {
-  return this.query().where({ user_id, type }).resultSize();
-};
-
-Strategy.countActiveForUser = function (user_id, type, active) {
-  return this.query().where({user_id, type, active}).resultSize();
-}
-
-// Strategy.countForUser(1, "in-play").then(x=> console.log(x))
-Strategy.findForMongo = function () {
-  return this.query()
-    .withGraphFetched({
-      strategy_prematch_rules: {
-        $modify: ["includeRule"],
-      },
-      strategy_inplay_rules: {
-        $modify: ["includeRule"],
-      },
-      outcome: {
-        $modify: ["includeRule"],
-      },
-    })
-    .select("*");
-};
-
-Strategy.findByIdWithRule = async function (id, trx) {
-  var strategy = await this.query(trx)
-    .findOne({
-      id,
-    })
-    .withGraphFetched({
-      strategy_prematch_rules: {
-        $modify: ["includeRule"],
-      },
-      strategy_inplay_rules: {
-        $modify: ["includeRule"],
-      },
-      outcome: {
-        $modify: ["includeRule"],
-      },
-      user: {
-        $modify: ["withSub"],
-      },
-    })
-    .select(...strategy_admin_fields);
-  return strategy;
-};
-
-Strategy.findWithRule = async function () {
-  var strategies = await this.query()
-    .withGraphFetched(
-      {
-        strategy_prematch_rules: {
-          $modify: ["includeRule"],
+Strategy.findByStrategyId = async function (_id, user_id, user_is_pro = false) {
+  if (user_is_pro) {
+    return this.findOne({ _id, is_preset: { $in: true } });
+  } else {
+    return this.findOne({
+      $or: [
+        {
+          _id,
+          user_id: ObjectId(user_id),
         },
-
-        outcome: {
-          $modify: ["includeRule"],
+        {
+          _id,
+          is_public: true,
         },
-        /* strategy_inplay_rules: {
-          second_rule: true,
-          first_rule: true
-        }*/
-      }
-      //  "strategy_prematch_rules(includeRule), strategy_inplay_rules.[first_rule,second_rule]"
-    )
-    .select(...strategy_public_fields)
-    .modifiers({});
-  //strategies.map(strategy => formatStrategy(strategy));
-
-  return strategies;
-};
-
-Strategy.findInPlayWithRule = async function (trx) {
-  var strategies = await this.query(trx)
-    .where({
-      type: "in-play",
-    })
-    .withGraphFetched(
-      {
-        strategy_prematch_rules: {
-          $modify: ["includeRule"],
-        },
-        strategy_inplay_rules: {
-          $modify: ["includeRule"],
-        },
-        outcome: {
-          $modify: ["includeRule"],
-        },
-      }
-      //  "strategy_prematch_rules(includeRule), strategy_inplay_rules.[first_rule,second_rule]"
-    );
-  //strategies.map(strategy => formatStrategy(strategy));
-
-  return strategies;
-  //.select(...strategy_public_fields)
-};
-
-Strategy.findInPlayRestApi = async function () {
-  var strategies = await this.query()
-    .where({
-      type: "in-play",
-    })
-    .withGraphFetched(
-      {
-        strategy_prematch_rules: {
-          $modify: ["includeRule"],
-        },
-        strategy_inplay_rules: {
-          $modify: ["includeRule"],
-        },
-        outcomes: {
-          $modify: ["includeRule"],
-        },
-      }
-      //  "strategy_prematch_rules(includeRule), strategy_inplay_rules.[first_rule,second_rule]"
-    );
-  return strategies;
-  //.select(...strategy_public_fields)
-};
-
-Strategy.updateHitrates = async function (user_id, type) {
-  return null;
-  const strategies = await this.query()
-    .where({
-      user_id,
-      type,
-    })
-    .select("id");
-  var strategy_ids = strategies.map((s) => s.id);
-  var picks = await Pick.aggregate([
-    {
-      $match: { strategy_id: { $in: strategy_ids }, status: "sent" },
-    },
-    { $group: { _id: "$strategy_id", sent: { $sum: 1 } } },
-  ]);
-  var count = Object.assign(
-    {},
-    ...picks.map((pick) => {
-      return {
-        [pick._id]: pick.sent,
-      };
-    })
-  );
-  for (var strategy of strategies) {
-    strategy["picks_sent"] = count[strategy.id] || 0;
+      ],
+    });
   }
-  if (strategies.length) {
-    return await Strategy.knex()
-      .table("strategies")
-      .insert(strategies)
-      .onConflict()
-      .merge();
-  }
-  return strategies;
-
-  // return strategies;
 };
+
+// Strategy.findByStrategyIdWithRule = async function (_id, trx) {
+//   return this.findOne(
+//     {
+//       _id,
+//     },
+//     strategy_admin_fields
+//   );
+// };
 
 Strategy.findAll = async function (
   type,
@@ -354,120 +377,108 @@ Strategy.findAll = async function (
   page = Math.max(Number(page || 1), 0);
   const perPage = 20;
   const skip = (page - 1) * perPage;
-  var extraParams;
+  const matchQuery = { type };
+  const sortQuery = {};
+  const projectQuery = {
+    hit_rate: 1,
+    id: 1,
+    title: 1,
+    strike_rate: 1,
+    picks_sent: 1,
+    trusted: 1,
+    updated_at: 1,
+    outcome: 1,
+    active: 1,
+    slug: 1,
+  };
+  user_id = new ObjectId(user_id);
   switch (filterBy) {
     case "active":
-      extraParams = { active: true };
+      Object.assign(matchQuery, { active: { $in: [1, true] } });
       break;
     case "inactive":
-      extraParams = { active: false };
+      Object.assign(matchQuery, { active: { $in: [0, false] } });
+      break;
+  }
+  if (search) {
+    Object.assign(matchQuery, {
+      $or: [{ title: { $regex: search, $options: "i" } }],
+    });
+  }
+  // const query = this.aggregate([
+  //   {
+  //     $match: extraParams,
+  //   },
+  //   {
+  //     $project: ,
+  //   },
+  // ]);
+
+  // { column: "trusted", order: "desc" },
+
+  switch (mode) {
+    case "explore-alerts":
+      Object.assign(matchQuery, {
+        is_public: { $in: [1, true] },
+        preset_id: null,
+        is_preset: { $nin: [1, true] },
+        user_id: { $ne: user_id },
+      });
+      break;
+    case "preset-alerts":
+      Object.assign(matchQuery, {
+        is_preset: { $in: [1, true] },
+        is_public: { $in: [1, true] },
+      });
       break;
     default:
-      extraParams = {};
+      // await this.updateHitrates(user_id, type);
+      Object.assign(matchQuery, {
+        user_id,
+      });
   }
 
-  const query = this.query()
-    //.withGraphFetched("strategy_prematch_rules")
-    .select(
-      "hit_rate",
-      "id",
-      "title",
-      "strike_rate",
-      "picks_sent",
-      "trusted",
-      "updated_at",
-      "active",
-      "slug"
-    )
-    .where({ type, ...extraParams })
-    .withGraphFetched({
-      outcome: {
-        $modify: ["includeRule"],
-      },
-    });
   switch (sortBy) {
     case "picks_sent":
-      query.orderBy([
-        { column: "picks_sent", order: "desc" },
-        { column: "trusted", order: "desc" },
-      ]);
+      Object.assign(sortQuery, { picks_sent: -1 });
       break;
     case "hit_rate":
       if (type == "in-play") {
-        query.orderBy([
-          { column: "strike_rate", order: "desc" },
-          { column: "trusted", order: "desc" },
-        ]);
+        Object.assign(sortQuery, { strike_rate: -1 });
       } else {
-        query.orderBy([
-          { column: "hit_rate", order: "desc" },
-          { column: "trusted", order: "desc" },
-        ]);
+        Object.assign(sortQuery, { hit_rate: -1 });
       }
-
       break;
     case "name":
-      query.orderBy([
-        { column: "title", order: "asc" },
-        { column: "trusted", order: "desc" },
-      ]);
+      Object.assign(sortQuery, { title: 1 });
       break;
     case "updated_at":
-      query.orderBy([
-        { column: "updated_at", order: "desc" },
-        { column: "trusted", order: "desc" },
-      ]);
+      Object.assign(sortQuery, { updated_at: -1 });
       break;
     default:
-      query.orderBy([
-        { column: "trusted", order: "desc" },
-        { column: "hit_rate", order: "desc" },
-      ]);
+      Object.assign(sortQuery, { trusted: -1 });
   }
 
-  // console.log("DEBUG WHY QUERY IS EMPTY", query.toKnexQuery().toString());
-  var strategies, totalCount;
-  if (search) {
-    query.where("title", "like", "%" + search + "%");
-  }
-  switch (mode) {
-    case "explore-alerts":
-      query
-        .where({
-          is_public: true,
-        })
-        .whereNull("preset_id")
-        .whereNot("is_preset", true)
-        .whereNot({ user_id });
-      var [total, strategies] = await Promise.all([
-        query.resultSize(),
-        query.offset(skip).limit(perPage),
-      ]);
-
-      break;
-    case "preset-alerts":
-      query.where({
-        is_preset: true,
-        is_public: true,
-      });
-      var [total, strategies] = await Promise.all([
-        query.resultSize(),
-        query.offset(skip).limit(perPage),
-      ]);
-
-      break;
-    default:
-      await Strategy.updateHitrates(user_id, type);
-      await query.where({
-        user_id,
-      });
-      var [total, strategies] = await Promise.all([
-        query.resultSize(),
-        query.offset(skip).limit(perPage),
-      ]);
-
-    // console.log("PICKS", picks);
-  }
+  const [total, strategies] = await Promise.all([
+    this.countDocuments(matchQuery),
+    this.aggregate([
+      {
+        $match: matchQuery,
+      },
+      {
+        $sort: sortQuery,
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: perPage,
+      },
+      {
+        $project: projectQuery,
+      },
+    ]),
+  ]);
 
   return [total, strategies];
 };
@@ -476,338 +487,308 @@ Strategy.findAllByAdmin = function (type, user_id, page = 1) {
   page = Math.max(Number(page), 0);
   const perPage = 10;
   const skip = (page - 1) * perPage;
-
-  const query = this.query()
-    //.withGraphFetched("strategy_prematch_rules")
-    .select("*")
-    .where({ type, user_id })
-    .orderBy([
-      { column: "trusted", order: "desc" },
-      { column: "picks_sent", order: "desc" },
-    ])
-    .withGraphFetched({
-      outcome: {
-        $modify: ["includeRule"],
-      },
-    })
-    .offset(skip)
-    .limit(10);
-
-  return query;
+  user_id = ObjectId(user_id);
+  const matchQuery = {
+    type,
+    user_id,
+  };
+  const sortQuery = {
+    trusted: -1,
+    picks_sent: -1,
+  };
+  const projectQuery = {
+    title: 1,
+    is_public: 1,
+    is_preset: 1,
+    hit_rate: 1,
+    trusted: 1,
+    active: 1,
+  };
+  return this.aggregate([
+    {
+      $match: matchQuery,
+    },
+    {
+      $sort: sortQuery,
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: perPage,
+    },
+    {
+      $project: projectQuery,
+    },
+  ]);
 };
 
 Strategy.findActiveByAdmin = function (type, user_id, page = 1) {
+  user_id = ObjectId(user_id);
   page = Math.max(Number(page), 0);
   const perPage = 100;
   const skip = (page - 1) * perPage;
-
-  const query = this.query()
-    //.withGraphFetched("strategy_prematch_rules")
-    .select("title", "id")
-    .where({ is_preset: true })
-    .orderBy([
-      { column: "trusted", order: "desc" },
-      { column: "picks_sent", order: "desc" },
-    ])
-    .offset(skip)
-    .limit(perPage);
-
-  return query;
-};
-
-Strategy.findByUserIds = function (user_ids) {
-  return this.query()
-    .withGraphFetched({
-      strategy_prematch_rules: true,
-      strategy_inplay_rules: true,
-    })
-    .select(...strategy_public_fields)
-    .whereIn("user_id", user_ids)
-    .where("type", "in-play")
-    .where("active", true);
+  const matchQuery = {
+    is_preset: { $in: [true, 1] },
+  };
+  if (type) {
+    matchQuery.type = type;
+  }
+  const sortQuery = {
+    trusted: -1,
+    picks_sent: -1,
+  };
+  const projectQuery = {
+    id: 1,
+    title: 1,
+  };
+  return this.aggregate([
+    {
+      $match: matchQuery,
+    },
+    {
+      $sort: sortQuery,
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: perPage,
+    },
+    {
+      $project: projectQuery,
+    },
+  ]);
 };
 
 Strategy.getTotalCount = function () {
-  return this.query().resultSize();
+  return this.count();
 };
 
 Strategy.getUserStrategies = function (user_id, limit = 4) {
-  return this.query()
-    .where({
-      user_id,
-    })
-    .orderBy("picks_sent", "DESC")
-    .limit(limit);
+  user_id = ObjectId(user_id);
+  const matchQuery = {
+    user_id,
+  };
+  const sortQuery = {
+    picks_sent: -1,
+  };
+  const projectQuery = {
+    ...strategy_public_fields,
+  };
+  return this.aggregate([
+    {
+      $match: matchQuery,
+    },
+    {
+      $sort: sortQuery,
+    },
+    {
+      $limit: limit,
+    },
+    {
+      $project: projectQuery,
+    },
+  ]);
 };
 
 Strategy.getOtherStrategies = function (user_id, limit = 4) {
-  return this.query()
-    .whereNot({
-      user_id,
-    })
-    .where({
-      is_public: true,
-    })
-    .where("picks_sent", ">", "10")
-    .whereNull("preset_id")
-    .orderBy("strike_rate", "DESC")
-    .limit(limit);
+  user_id = ObjectId(user_id);
+  const matchQuery = {
+    user_id: { $ne: user_id },
+    is_public: true,
+    picks_sent: { $gt: 10 },
+    preset_id: null,
+  };
+  const sortQuery = {
+    strike_rate: -1,
+  };
+  const projectQuery = {
+    ...strategy_public_fields,
+  };
+  return this.aggregate([
+    {
+      $match: matchQuery,
+    },
+    {
+      $sort: sortQuery,
+    },
+    {
+      $limit: limit,
+    },
+    {
+      $project: projectQuery,
+    },
+  ]);
 };
 
-Strategy.syncWithMongo = async function (id) {
-  const data = await Strategy.findByIdWithRule(id);
-  await MongoStrategy.findOneAndUpdate(
-    { id },
-    { $set: data },
+Strategy.trust = function (_id, user_id) {
+  user_id = ObjectId(user_id);
+  return this.findOneAndUpdate(
     {
-      upsert: true,
+      _id,
+      user_id,
+    },
+    {
+      $set: {
+        trusted: true,
+      },
+    },
+    {
+      new: true,
     }
   );
-  return data;
-};
-Strategy.trust = function (id, user_id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx)
-      .patch({ trusted: true })
-      .findOne({ id, user_id });
-    await MongoStrategy.findOneAndUpdate(
-      { id, "user.id": user_id },
-      { trusted: true }
-    );
-    return strategy;
-  });
 };
 
-Strategy.updateLeagues = function (id, user_id, leagues) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx)
-      .patch({ leagues })
-      .findOne({ id, user_id });
-    await MongoStrategy.findOneAndUpdate(
-      { id, "user.id": user_id },
-      { leagues: leagues }
-    );
-    return strategy;
-  });
+Strategy.untrust = function (_id, user_id) {
+  user_id = ObjectId(user_id);
+  return this.findOneAndUpdate(
+    {
+      _id,
+      user_id,
+    },
+    {
+      $set: {
+        trusted: false,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 };
 
-Strategy.excludeLeague = function (id, user_id, league_id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx)
-      .select("leagues")
-      .findOne({ id, user_id });
-    await this.query(trx)
-      .patch({ leagues: strategy.leagues.filter((id) => id != league_id) })
-      .findOne({ id, user_id });
-    await Strategy.syncWithMongo(id);
-    return strategy;
-  });
+Strategy.updateLeagues = function (_id, user_id, leagues) {
+  user_id = ObjectId(user_id);
+  return this.findOneAndUpdate(
+    {
+      _id,
+      user_id,
+    },
+    {
+      $set: {
+        leagues,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 };
 
-Strategy.untrust = function (id, user_id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx)
-      .patch({ trusted: false })
-      .findOne({ id, user_id });
-    await MongoStrategy.findOneAndUpdate(
-      { id, "user.id": user_id },
-      { trusted: false }
-    );
-    return strategy;
-  });
+Strategy.excludeLeague = function (_id, user_id, league_id) {
+  user_id = ObjectId(user_id);
+  return this.findOneAndUpdate(
+    {
+      _id,
+      user_id,
+    },
+    {
+      $pull: {
+        leagues: {
+          league_id,
+        },
+      },
+    },
+    {
+      new: true,
+    }
+  );
 };
 
 Strategy.togglePresetByAdmin = async function (id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx).findOne({ id });
-    await strategy.$query().patchAndFetch({ is_preset: raw("NOT is_preset") });
-
-    await MongoStrategy.findOneAndUpdate(
-      { id },
-      { is_preset: strategy.is_preset }
-    );
-    return strategy;
-  });
-};
-Strategy.togglePublicByAdmin = async function (id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx).findOne({ id });
-    await strategy.$query().patchAndFetch({ is_public: raw("NOT is_public") });
-
-    await MongoStrategy.findOneAndUpdate(
-      { id },
-      { is_public: strategy.is_public }
-    );
-    return strategy;
-  });
-};
-
-Strategy.toggle = async function (id, user_id) {
-  return this.transaction(async (trx) => {
-    const strategy = await this.query(trx).findOne({ id, user_id });
-    // console.log("BEFORE", strategy);
-    await strategy.$query().patchAndFetch({ active: raw("NOT active") });
-    console.log("AFTER", strategy);
-    await MongoStrategy.findOneAndUpdate(
-      { id, "user.id": user_id },
-      { active: strategy.active }
-    );
-    if (!strategy.active) {
-      await Pick.cancelAlerts(id, user_id);
-    } else {
-      await Strategy.reschedule(strategy.id);
-    }
-    return strategy;
-  });
-};
-
-Strategy.create = async function (body, type, user_id, preset_id) {
-  var {
+  return this.findByIdAndUpdate(
     id,
-    title,
+    [{ $set: { is_preset: { $eq: [false, "$is_preset"] } } }],
+    {
+      new: true,
+    }
+  );
+};
+
+Strategy.togglePublicByAdmin = async function (id) {
+  return this.findByIdAndUpdate(
+    id,
+    [{ $set: { is_public: { $eq: [false, "$is_public"] } } }],
+    {
+      new: true,
+    }
+  );
+};
+
+Strategy.toggle = async function (_id, user_id) {
+  user_id = ObjectId(user_id);
+  await Pick.cancelAlerts(_id, user_id);
+
+  const strategy = await this.findOneAndUpdate(
+    { _id, user_id },
+    [{ $set: { active: { $eq: [false, "$active"] } } }],
+    {
+      new: true,
+    }
+  );
+  if (strategy.type == "pre-match" && strategy.active) {
+    await Strategy.reschedule(strategy._id);
+  }
+};
+
+Strategy.import = async function (id, user_id, user_is_pro) {
+  user_id = ObjectId(user_id);
+  const strategy = await Strategy.findByStrategyId(id, user_id, user_is_pro);
+  if (!strategy) {
+    throw new Error("Strategy not found");
+  }
+  const preset_id = strategy.is_preset ? strategy._id : undefined;
+  const {
     strategy_prematch_rules,
     strategy_inplay_rules,
     outcome_id,
     is_public,
     timer,
     note,
-    leagues,
-  } = body;
-
-  return await this.transaction(async (trx) => {
-    var strategy;
-    if (id) {
-      const strategy_old = await Strategy.query(trx).findOne({ id, user_id });
-      strategy = await strategy_old.$query(trx).patchAndFetch({
-        title,
-        is_public,
-        timer,
-        note,
-        leagues,
-        type,
-        outcome_id,
-        preset_id: null,
-      });
-    } else {
-      strategy = await Strategy.query(trx).insert({
-        title,
-        is_public,
-        timer,
-        note,
-        leagues,
-        type,
-        outcome_id,
-        user_id,
-        slug: uuid.v4(),
-        preset_id,
-      });
-    }
-
-    if (strategy_prematch_rules.length) {
-      await trx
-        .table("strategy_prematch_rules")
-        .where("strategy_id", strategy.id)
-        .del();
-
-      await trx
-        .insert(
-          strategy_prematch_rules.map((rule) => {
-            delete rule["id"];
-            return {
-              ...rule,
-              strategy_id: strategy.id,
-              values: JSON.stringify(rule.values),
-            };
-          })
-        )
-        .into("strategy_prematch_rules")
-        .onConflict()
-        .merge();
-    }
-
-    if (type == "in-play") {
-      await trx
-        .table("strategy_inplay_rules")
-        .where("strategy_id", strategy.id)
-        .del();
-
-      await trx
-        .table("strategy_inplay_rules")
-        .insert(
-          strategy_inplay_rules.map((rule) => {
-            delete rule["id"];
-            return {
-              ...rule,
-              timer: JSON.stringify(rule.timer),
-              strategy_id: strategy.id,
-            };
-          })
-        )
-        .onConflict()
-        .merge();
-    }
-    const data = await Strategy.findByIdWithRule(strategy.id, trx);
-    await MongoStrategy.findOneAndUpdate(
-      { id: strategy.id },
-      { $set: data },
-      {
-        upsert: true,
-      }
-    );
-    if (type == "pre-match") {
-      await Strategy.reschedule(strategy.id);
-    }
-
-    return strategy;
-  });
-};
-
-Strategy.createCopy = async function (id, user_id) {
-  var strategy = await this.query().findOne({ id, user_id });
-  delete strategy.id;
-  delete strategy.created_at;
-  delete strategy.updated_at;
-  delete strategy.slug;
-  strategy.active = false;
-  return await Strategy.query().insert(strategy);
-};
-
-Strategy.import = async function (id, user_id, user_is_pro) {
-  var strategy = await Strategy.findById(id, user_id, user_is_pro);
-  const preset_id = strategy.is_preset ? strategy.id : undefined;
-  delete strategy.id;
-  await Strategy.create(strategy, strategy["type"], user_id, preset_id);
-};
-
-Strategy.deleteById = function (id, user_id) {
-  return this.transaction(async (trx) => {
-    await this.query(trx).delete().where({
-      id,
-      user_id,
-    });
-    await Pick.cancelAlerts(id, user_id);
-    return await MongoStrategy.deleteById(id, user_id);
-  });
-};
-
-Strategy.updateHitrate = function (id, user_id) {
-  return this.query().where({
-    is_preset: true,
-    active: true,
     type,
+    leagues,
+  } = strategy;
+  const title = strategy.is_preset
+    ? strategy.title
+    : `Copy of ${strategy.title}`;
+
+  return await Strategy.createOrUpdate(
+    {
+      title,
+      strategy_prematch_rules,
+      strategy_inplay_rules,
+      outcome_id,
+      is_public,
+      timer,
+      note,
+      leagues,
+    },
+    type,
+    user_id,
+    preset_id
+  );
+};
+
+Strategy.deleteByStrategyId = async function (_id, user_id) {
+  user_id = ObjectId(user_id);
+  await Pick.cancelAlerts(_id, user_id);
+  return this.findOneAndDelete({
+    _id,
+    user_id,
   });
 };
 
 Strategy.findAllPreset = function (type) {
-  return this.query().where({
-    is_preset: true,
-    active: true,
+  return this.find({
+    is_preset: { $in: [true, 1] },
+    active: { $in: [true, 1] },
     type,
   });
 };
 
 Strategy.findAllInPlay = function (type) {
-  return this.query().where({
+  return this.find({
     is_preset: true,
     active: true,
     type,
@@ -815,7 +796,7 @@ Strategy.findAllInPlay = function (type) {
 };
 
 Strategy.findPresetById = function (id) {
-  return this.query().where({
+  return this.find({
     is_preset: true,
     active: true,
     id,
@@ -823,27 +804,26 @@ Strategy.findPresetById = function (id) {
 };
 
 Strategy.search = function (searchText, type) {
-  var extraParams;
+  const perPage = 10;
+  const matchQuery = {
+    $text: {
+      $search: searchText,
+    },
+  };
   if (type == "upcoming") {
-    extraParams = {
+    Object.assign(matchQuery, {
       status: { $nin: ["FT", "FT_PEN"] },
       timestamp: { $gte: startOfDay },
-    };
+    });
   } else {
-    extraParams = {
+    Object.assign(matchQuery, {
       status: { $in: ["FT", "FT_PEN"] },
       timestamp: { $lte: endOfDay },
-    };
+    });
   }
-
-  return this.query([
+  return this.aggregate([
     {
-      $match: {
-        $text: {
-          $search: searchText,
-        },
-        ...extraParams,
-      },
+      $match: matchQuery,
     },
     {
       $sort: {
@@ -851,7 +831,7 @@ Strategy.search = function (searchText, type) {
       },
     },
     {
-      $limit: 10,
+      $limit: perPage,
     },
     {
       $project: {
@@ -867,119 +847,6 @@ Strategy.search = function (searchText, type) {
   ]);
 };
 
-// Strategy.query()
-//   .select()
-//   .then(strategies => {
-//     strategies.forEach(async strategy => {
-//       await Strategy.query()
-//         .patch({ slug: uuid.v4() })
-//         .findById(strategy.id);
-//     });
-//   });
-
-Strategy.syncAllWithMongo = async function () {
-  const strategies = await Strategy.query().select("id").orderBy("id", "DESC");
-  var count = 0;
-  for (var strategy of strategies) {
-    const { id } = strategy;
-    const data = await Strategy.findByIdWithRule(id);
-    const inser = await MongoStrategy.findOneAndUpdate(
-      { id },
-      { $set: data },
-      {
-        upsert: true,
-      }
-    );
-
-    count++;
-    console.log("INSERTED", count, strategies.length);
-  }
-};
-
-Strategy.updateTimer = async function () {
-  const strategy_ids = await Strategy.knexQuery()
-    .table("strategy_inplay_rules")
-    .whereNull("timer")
-    .distinct()
-    .pluck("strategy_id");
-
-  const strategies = await Strategy.query()
-    .whereIn("id", strategy_ids)
-    .select("id", "timer");
-  console.log("strategies", strategies);
-  for (var strategy of strategies) {
-    const { id } = strategy;
-    console.log(strategy, "HEHE");
-    await Strategy.knexQuery()
-      .table("strategy_inplay_rules")
-      .update({
-        timer: JSON.stringify(strategy.timer),
-      })
-      .where({ strategy_id: strategy.id })
-      .whereNull("timer");
-    // const data = await Strategy.findByIdWithRule(id);
-    // await MongoStrategy.findOneAndUpdate(
-    //   { id },
-    //   { $set: data },
-    //   {
-    //     upsert: true
-    //   }
-    // );
-  }
-};
-
-Strategy.updatePresetItems = async function (preset_id) {
-  // const preset = await Strategy.findByIdWithRule(id);
-  const strategies_under_preset = await Strategy.query()
-    .where({ preset_id })
-    .select("id", "user_id");
-  const unique = {};
-  for (var strategy of strategies_under_preset) {
-    unique[strategy.user_id] = strategy.id;
-  }
-  for (var user_id in unique) {
-    const id = unique[user_id];
-    const delete_count = await Strategy.query()
-      .delete()
-      .whereNot("id", id)
-      .where({ preset_id, user_id });
-    console.log(user_id, id, preset_id, "DELETED", delete_count);
-  }
-  // Strategy.query().delete().where({user_id: })
-
-  // for (var strategy of strategies_under_preset) {
-  //   // const body = { ...preset };
-  //   // delete body["is_preset"];
-  //   console.log(strategy.id, "DOING", preset_id);
-  //   await Strategy.import(preset_id, strategy.user_id, true);
-  //   await Strategy.deleteById(strategy.id, strategy.user_id);
-  //   // await Strategy.create(body, "in-play", preset.user_id, preset.id);
-  //   console.log(strategy.id, "DONE");
-  // }
-};
-Strategy.updatePresets = async function () {
-  const preset_ids = await Strategy.query()
-    .where({ is_preset: true, type: "in-play" })
-    .pluck("id");
-
-  for (var preset_id of preset_ids) {
-    await Strategy.updatePresetItems(preset_id);
-  }
-  console.log(preset_ids);
-};
-
-// Strategy.updateTimer().then(x => console.log(x));
-// Strategy.updatePresets().then(x => console.log(x));
-// Strategy.syncAllWithMongo().then(x => console.log(x));
-//   .select()
-//   .then(strategies => {
-//     strategies.forEach(async strategy => {
-//       await Strategy.query()
-//         .patch({ slug: uuid.v4() })
-//         .findById(strategy.id);
-//     });
-//   });
-
 Strategy.updateUser = function (changeEvent) {
   const fullDocument = changeEvent.fullDocument;
   const { id: user_id } = fullDocument;
@@ -990,4 +857,65 @@ Strategy.updateUser = function (changeEvent) {
     .collection("strategies");
   return strategies.updateMany({ user_id }, { $set: { user: fullDocument } });
 };
+
+const Queue = require("async-parallel-queue");
+
+const queue = new Queue({ concurrency: 100 });
+
+async function seedStrategies() {
+  // await Strategy.deleteMany({});
+  const strategies = require("../../mongoseeders/strategies.json");
+  const fn = queue.fn(async (strategy) => {
+    try {
+      strategy["is_public"] = strategy["is_public"] ? true : false;
+      strategy["is_preset"] = strategy["is_preset"] ? true : false;
+      strategy["trusted"] = strategy["trusted"] ? true : false;
+      strategy["active"] = strategy["active"] ? true : false;
+      strategy["user_id"] = strategy["user"]._id;
+      strategy["outcome_id"] = strategy["outcome"]._id;
+      await Strategy.seedRestore(
+        strategy,
+        strategy["type"],
+        strategy["user_id"]
+      );
+      console.log("INSERTED", strategy._id);
+    } catch (error) {
+      console.log("ERROR", strategy["_id"], error);
+    }
+  });
+
+  for (var strategy of strategies) {
+    if (strategy["type"] == "in-play") fn(strategy);
+  }
+  await queue.waitIdle();
+  queue.start();
+}
+async function seedBetter() {
+  const strategy = await Strategy.findOne(
+    { "strategy_inplay_rules.first_code": { $exists: false }, type: "in-play" },
+    { strategy_inplay_rules: 1 }
+  );
+
+  await strategy.populate("strategy_inplay_rules.first_rule_id");
+  await strategy.populate("strategy_inplay_rules.second_rule_id");
+  strategy.strategy_inplay_rules = formatInPlayRules(strategy);
+  console.log("FOUND", await strategy.save());
+}
+
+// seedBetter();
+// Strategy.find({}, { _id: 1, id: 1 })
+//   .lean()
+//   .then((strategys) => {
+//     //savehmap to json
+//     const json = JSON.stringify(strategys);
+//     //write to file
+//     const fs = require("fs");
+//     fs.writeFile("./strategys_hmap.json", json, (err) => {
+//       if (err) {
+//         console.log(err);
+//       }
+//     });
+//   });
+
+// seedStrategies();
 module.exports = Strategy;

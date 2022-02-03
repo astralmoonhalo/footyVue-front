@@ -1,0 +1,272 @@
+[
+  {
+    "id": 1,
+    "title": "Launch",
+    "content": "<p>Welcome to Footy Amigo. Today marks the begining of our journey after countless sleepness nights and months of development. </p><p><br></p><p>Mission: To help people make SMART and Well-Informed betting decisions by empowering them with the right information — at the right time — before you place any bet.</p><p><br></p><p>Our Vision:  Use the best innovative technolgy to help everyone who bets on football — Bet smart, with Confidence and Ease. </p><p><br></p><p>Let's go!</p>",
+    "version": 1,
+    "datetime": "2021-11-18 03:53:40",
+    "completed": true,
+    "created_at": "2021-11-19 20:14:39",
+    "updated_at": "2021-11-20 08:52:41"
+  },
+  {
+    "id": 2,
+    "title": "Bug Fixes",
+    "content": "<p><strong>Bug Fixes and Updates</strong>: </p><ul><li>Strategy sorting</li><li>InPlay telegram alert not showing correct InPlay odds name</li><li>Created the changelogs and product roadmap help page</li><li>Fixed some bugs regarding importing preset strategies in the betting systems page for Pro users</li></ul>",
+    "version": 1.01,
+    "datetime": "2021-11-19 09:39:55",
+    "completed": true,
+    "created_at": "2021-11-19 20:40:10",
+    "updated_at": "2021-11-20 09:06:35"
+  },
+  {
+    "id": 3,
+    "title": "FIXTURE PAGE",
+    "content": "<p><strong>Fixture Page:</strong> Ability to Filter the fixture page by rules and conditions just like the prematch strategy.</p>",
+    "version": 1,
+    "datetime": "2021-11-20 15:10:58",
+    "completed": false,
+    "created_at": "2021-11-19 20:41:35",
+    "updated_at": "2021-11-19 20:41:44"
+  },
+  {
+    "id": 4,
+    "title": "PRE-MATCH STRATEGY",
+    "content": "<p><strong>HIT RATE %:</strong> Ability to show automatic hit rate % calculation of PreMatch strategies </p>",
+    "version": 1.04,
+    "datetime": "2021-11-20 09:32:00",
+    "completed": false,
+    "created_at": "2021-11-19 21:33:12",
+    "updated_at": "2021-11-20 08:58:24"
+  },
+  {
+    "id": 7,
+    "title": "Favouriting Fixtures",
+    "content": "<p><strong>Favourites: </strong>Ability to click on the \"star\" icon to favourite a match on the fixture page you are interested in. </p>",
+    "version": 1.06,
+    "datetime": "2021-11-20 09:02:35",
+    "completed": false,
+    "created_at": "2021-11-20 09:03:22",
+    "updated_at": "2021-11-20 09:03:22"
+  },
+  {
+    "id": 8,
+    "title": "Streak Addition & Bug Fixes",
+    "content": "<p><strong>Bug Fixes and Updates:</strong></p><ul><li>Fixed a bug that was stopping some inplay alerts to be sent to users.</li><li>Added <strong>\"Streak\"</strong> as part of PreMatch stats. You can now create rules such as \"Home Win % in Last 5 Games is more than or equals to 75%\" etc..</li><li>Adjusted the fonts accross Footy Amigo to look cleaner and inline. </li></ul>",
+    "version": 1.02,
+    "datetime": "2021-11-20 19:03:00",
+    "completed": true,
+    "created_at": "2021-11-20 09:06:02",
+    "updated_at": "2021-11-20 18:36:50"
+  },
+  {
+    "id": 9,
+    "title": "Probabilty Performance",
+    "content": "<p><strong>Probabilty Algorithm Performace: </strong>You will be able to see the previous performance of the Footy Amigo Probabilty performance. </p><p><br></p><p>This will enable you decide see the strenght of the probabilty algorithms. </p>",
+    "version": null,
+    "datetime": "2021-11-20 09:07:00",
+    "completed": false,
+    "created_at": "2021-11-20 09:09:20",
+    "updated_at": "2021-11-20 09:09:20"
+  },
+  {
+    "id": 11,
+    "title": "Fixture Page Alert",
+    "content": "<p><strong>Create Alerts on Fixture Page:</strong> You will be able to create quick alerts on the fixture page. </p><p><br></p><p>For example, let's assume you see a fixture on the Fixtures page that you are interested in, you will be able to create alerts based on </p><p><br></p><ul><li><strong>Odds </strong>(e.g Send me an alert when the Over 2.5 Odds hits 1.9) </li><li><strong>Availability:</strong> (e.g Send me an alert when BTTS market is added on Bet365 for the fixture you are interested in) </li><li><strong>Live Occurences:</strong> ( e.g Send me an alert when after 20mins of the match, the numer of goals is less than 1) </li></ul><p><br></p>",
+    "version": null,
+    "datetime": "2021-11-20 09:14:50",
+    "completed": false,
+    "created_at": "2021-11-20 09:20:06",
+    "updated_at": "2021-11-20 09:20:06"
+  },
+  {
+    "id": 12,
+    "title": "Performance Optimisation",
+    "content": "<p><strong>Server Optimisation and Bug Fixes</strong></p><p><br></p><ul><li>Fixed website and backend server errors </li><li>Import strategy optimisation</li><li>Strategy creation flow and bug fixes </li><li>Preset and Explore page bug fixes</li><li>Alerts and Picks optmisation</li></ul>",
+    "version": 1.03,
+    "datetime": "2021-11-22 21:16:20",
+    "completed": true,
+    "created_at": "2021-11-22 21:19:02",
+    "updated_at": "2021-11-22 21:19:02"
+  },
+  {
+    "id": 13,
+    "title": "Alerts Minutes Late Bug",
+    "content": "<p><strong>Alert Delay Bug Fixes: </strong></p><ul><li>We fixed some bugs that made PreMatch alerts to be sent some minute late. </li><li>Bug fixes related to PreMatch strategy inside page (Results, Upcoming and Picks Page) </li></ul>",
+    "version": 1.04,
+    "datetime": "2021-11-24 17:25:57",
+    "completed": true,
+    "created_at": "2021-11-24 17:29:40",
+    "updated_at": "2021-11-24 17:29:40"
+  },
+  {
+    "id": 14,
+    "title": "PreMatch & Live Odds Bug",
+    "content": "<p><strong>PreMatch &amp; Live Odds Bug</strong></p><ul><li>Some Prematch odds missing both on the fixture page and the strategy creation page. (e.g Over 0.5 First Half Goals), now resolved. </li><li>Some InPlay live odds were missing which meant alerts were not being sent with those odds used within the rules. This is now resolved. </li></ul>",
+    "version": 1.05,
+    "datetime": "2021-11-30 12:12:14",
+    "completed": true,
+    "created_at": "2021-11-30 12:14:00",
+    "updated_at": "2021-11-30 12:14:08"
+  },
+  {
+    "id": 15,
+    "title": "InPlay Strategy Timing + Momentum",
+    "content": "<p><strong>InPlay Timing Bug Fixes:</strong></p><ul><li>We resolved the bugs related to InPlay strategy creation as related to Timing. You can now create more complex InPlay strategies with timing such as \"Past X minute\" , \"Until X minute\" etc.</li><li>We added descriptive text under the Timer option for better user experience and understanding of the rules being created</li></ul><p><strong>Live Attack Momentum:</strong></p><ul><li>We added Live Momentum as an InPlay stat that can be added to your InPlay strategies.</li></ul><p>The Live Attack momentum formular we make use of are:</p><ol><li>Each <strong>shot on target</strong> in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +12 points</li><li>Each <strong>shot off target</strong> in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +8 points</li><li>Each <strong>dangerous attack</strong> in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +2 points</li><li>Each 5% of <strong>possession</strong>: +1 point</li></ol><p><br></p>",
+    "version": 1.06,
+    "datetime": "2021-12-06 19:35:18",
+    "completed": true,
+    "created_at": "2021-12-06 19:42:57",
+    "updated_at": "2021-12-06 19:43:50"
+  },
+  {
+    "id": 16,
+    "title": "InPlay & Prematch Bug Fixes",
+    "content": "<p><strong>PreMatch &amp; InPlay Creation Flow.</strong></p><ul><li>We fixed the bug that made users not able to click \"Unselect all\" for the leagues when creating both Prematch and Inplay strategies.</li><li>We fixed the way InPlay strategy timer works. Now \"At X Minutes\" will count all occurence up until that time. e.g <em>\"Shots on target more than 7 at minute 25\" will now count all shots on target from the begining of the match up until the 25th minute. </em></li><li>+ Other minor bug fixes</li></ul>",
+    "version": 1.07,
+    "datetime": "2021-12-09 13:57:59",
+    "completed": true,
+    "created_at": "2021-12-10 14:01:02",
+    "updated_at": "2021-12-10 14:01:02"
+  },
+  {
+    "id": 17,
+    "title": "\"Upcoming\" fixtures showing blank",
+    "content": "<p><strong>Upcoming Matches Bug Fix</strong></p><ul><li>We fixed a bug that saw some users not seeing \"upcoming matches\" in their prematch strategies. This bug has been resolved, thanks to a fellow Pro member amigo - Antti (from Finland) for reporting this bug</li></ul>",
+    "version": 1.08,
+    "datetime": "2021-12-10 14:21:20",
+    "completed": true,
+    "created_at": "2021-12-10 14:23:16",
+    "updated_at": "2021-12-10 14:23:16"
+  },
+  {
+    "id": 18,
+    "title": "New Leagues Added",
+    "content": "<p><strong>New Leagues Added</strong></p><ul><li>We added 300 more leagues to our database to further increase our coverage. </li></ul>",
+    "version": 1.09,
+    "datetime": "2021-12-17 07:42:01",
+    "completed": true,
+    "created_at": "2021-12-17 07:43:14",
+    "updated_at": "2021-12-17 07:43:14"
+  },
+  {
+    "id": 19,
+    "title": "Lauched Streaks Page",
+    "content": "<p><strong>Streak Page Launch.</strong></p><ul><li>We lauched the STREAK page. The page contains teams on a streak in various markets.</li><li>Fixed some mobile UI bugs.</li></ul><p><br></p>",
+    "version": 1.1,
+    "datetime": "2021-12-18 14:08:39",
+    "completed": true,
+    "created_at": "2021-12-19 14:10:24",
+    "updated_at": "2021-12-19 14:10:24"
+  },
+  {
+    "id": 20,
+    "title": "Attack Momentum on Live Matches",
+    "content": "<p><strong>Attack Momentum on Live Matches</strong></p><ul><li>We launched the attack momentum that shows the attacking pressure and momentum on live matches. </li></ul><p><strong>The formule we use for the calculation is: </strong></p><ol><li>Each <strong>shot on target</strong> by a team in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +12 points</li><li>Each <strong>shot off target</strong> in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +8 points</li><li>Each <strong>dangerous attack</strong> in the <span style=\"color: rgb(0, 0, 0);\">past 10 minutes</span>: +2 points</li><li>Each 5% of <strong>possession</strong>: +1 point</li></ol><p><br></p>",
+    "version": 1.11,
+    "datetime": "2021-12-25 13:18:43",
+    "completed": true,
+    "created_at": "2021-12-25 13:21:19",
+    "updated_at": "2021-12-25 13:26:11"
+  },
+  {
+    "id": 21,
+    "title": "New Corner Stats Added",
+    "content": "<p><strong>New Corner Stats Added.</strong></p><p>We added some custom new corner stats that can be useful for betting in some unique corner markets provided by some bookies such as WilliamHills.</p><ul><li>31-45 min corner % </li><li>Corners after 75th min %</li><li>More corners in 1H than 2H</li><li>More corners in 2H than 1H</li></ul><p><br></p>",
+    "version": 1.12,
+    "datetime": "2021-12-27 07:18:45",
+    "completed": true,
+    "created_at": "2021-12-29 07:22:10",
+    "updated_at": "2021-12-29 07:22:10"
+  },
+  {
+    "id": 22,
+    "title": "10yrs H2H Stats Added",
+    "content": "<p><strong>Head to Head Stats (10yrs+)</strong></p><ul><li>We added a new PreMatch stats category called \"Head to Head\". This contains various H2H stats that can be useful for creating much stronger strategies. </li></ul><p><em>Shoutout to our amigo \"Makc\" from Russia who asked us to create 2 H2H stats he needed for his strategy, this inspired us to create over 20 H2H stats. </em></p>",
+    "version": 1.13,
+    "datetime": "2021-12-28 07:22:11",
+    "completed": true,
+    "created_at": "2021-12-29 07:24:52",
+    "updated_at": "2021-12-29 07:24:52"
+  },
+  {
+    "id": 23,
+    "title": "Minor Bug Fixes",
+    "content": "<p><strong>Minor Bug Fixes</strong></p>",
+    "version": 1.14,
+    "datetime": "2021-12-29 07:24:52",
+    "completed": true,
+    "created_at": "2021-12-29 07:25:16",
+    "updated_at": "2021-12-29 07:25:16"
+  },
+  {
+    "id": 24,
+    "title": "Video Tutorials Added",
+    "content": "<p><strong>How-To Videos Added. </strong></p><ul><li>We added a new tab called under the Get Help section called <strong>\"Video Tutorials\"</strong>. The purpose of this is to help answer any question you might have about Footy Amigo and how things work. </li></ul>",
+    "version": 1.15,
+    "datetime": "2021-12-30 15:52:09",
+    "completed": true,
+    "created_at": "2021-12-30 15:56:43",
+    "updated_at": "2021-12-30 15:56:43"
+  },
+  {
+    "id": 25,
+    "title": "Either Team Option",
+    "content": "<p><strong>\"Either Team\" Option Added.</strong> </p><ul><li>We added a new team selection called \"Either Team\". Previously, when creating a PreMatch strategy, you could only select \"Home Team\", \"Away Team\" or \"Both Teams\" for your stats but now we added an option for either team.</li></ul><p>This way, you have the flebility to create rules such as \"+2.5 Goals % of <strong>either team</strong> is more than 75%\"... and Footy Amigo will send you an alert if either of the teams meets your condition(s).</p><p><br></p><p>Thanks to our amigo \"Koma\" from Russia who asked for that feature. </p>",
+    "version": 1.16,
+    "datetime": "2021-12-30 15:57:01",
+    "completed": true,
+    "created_at": "2021-12-30 16:01:13",
+    "updated_at": "2021-12-30 16:01:13"
+  },
+  {
+    "id": 26,
+    "title": "Fixes, Updates & more.",
+    "content": "<p><strong>Updates &amp; Bug Fixes. </strong></p><ul><li>Our amigo \"Sakis\" requested a new outcome \"Over 2.5 First-Half Goals\" be added. So we added the stats and outcome. </li><li>New Pro users were not getting automatic access to the Streak page, we fixed the bug. </li><li>Strategy table was not showing correct amount of strategies on the list untill you scroll fully, we fixed it and it shows correct strategy numbering. </li><li>Strategy search bug fixed</li></ul><p><br></p>",
+    "version": 1.17,
+    "datetime": "2022-01-02 08:55:51",
+    "completed": true,
+    "created_at": "2022-01-09 09:00:36",
+    "updated_at": "2022-01-09 09:00:36"
+  },
+  {
+    "id": 27,
+    "title": "Fixture Filtering Added",
+    "content": "<p><strong>Filter The Fixture Page. </strong></p><ul><li>We added a new tool on the fixture page called \"Filter\" and this allows you to be able to filter the fixture page to find games on a single list that fits certain rules you've set.</li></ul><p><br></p><p>Use our new filter tool to comb through the fixtures page and find selections that meets your needs in seconds. Maybe you want to only see Home teams that have first half goals in 75% of their matches, or teams on a +2.5 goals streak in their last 5 matches? Its all possible and can be done within seconds by adding (or mix matching) your rules to filter the fixture page.</p>",
+    "version": 1.18,
+    "datetime": "2022-01-04 09:01:10",
+    "completed": true,
+    "created_at": "2022-01-09 09:05:13",
+    "updated_at": "2022-01-09 09:05:13"
+  },
+  {
+    "id": 28,
+    "title": "Download Picks Button",
+    "content": "<p><strong>CSV Picks Download</strong></p><ul><li>Download Picks button now working for PreMatch &amp; InPlay strategies. You can now download the picks in csv format for your own offline strike rate calculation. </li></ul>",
+    "version": 1.19,
+    "datetime": "2022-01-05 09:05:15",
+    "completed": true,
+    "created_at": "2022-01-09 09:08:36",
+    "updated_at": "2022-01-09 09:08:36"
+  },
+  {
+    "id": 29,
+    "title": "App Launch!",
+    "content": "<p><strong>Footy Amigo App Launch!</strong></p><p><br></p><ul><li>We launched our own app on GooglePlay Store and iOS Appstore. </li></ul><p><br></p><p>Most users have been facing issues with delayed or missed Prematch alerts due to Telegram API limits, so we decided to create our own app from scratch to handle sending match alerts to our users instead of relying on Telegram </p><p><br></p><p>We relied on Telegram to handle all alerts but just days after we launched, we discovered that they would not be a good fit for us because we hit their API limits of 30 messages per second within hours of launch. </p><p><br></p><p>On launch day, we had thousands of alerts that needed to be sent to our amigos and Telegram's API kept blocking them due to limits. <em>(we did not anticipate the quick growth and amount of strategies our amigos would be creating so early on) </em></p><p><br></p><p>This meant we needed to instantly start developing our own app even though we planned to do so after 6 months or 1 year of launch. We had to start developing just dew days after launch. <em>(this meant hiring an app developer to the team) </em></p><p><br></p><p>The whole development process took about 5 weeks and then about 2 weeks of bakc and forth with the appstores for approval (due to the festive period) </p><p><br></p><p>To say the truth, having our own app is expensive but we rather make a loss to create quality service than try to cheap it out using services like Telegram and have quality / satisfactory issues with our amigos <em>(+ our app looks way better anyways :) )  </em></p><p><br></p><p>We finally launched the app and in the process of removing EVERY connection we had with Telegram, so all alerts will sent via our own app and all missed or delayed alerts will be solved once we have fully migrated all the code from Telegram (which will take about 1-3days) </p><p><br></p>",
+    "version": 1.2,
+    "datetime": "2022-01-07 09:08:38",
+    "completed": true,
+    "created_at": "2022-01-09 09:23:14",
+    "updated_at": "2022-01-09 09:23:14"
+  },
+  {
+    "id": 30,
+    "title": "Minor Bug Fixes",
+    "content": "<p><strong>Minor Bug Fixes</strong></p>",
+    "version": 1.21,
+    "datetime": "2022-01-14 09:31:48",
+    "completed": true,
+    "created_at": "2022-01-15 09:32:27",
+    "updated_at": "2022-01-15 09:32:27"
+  }
+]

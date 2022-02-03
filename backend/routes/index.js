@@ -21,7 +21,6 @@ function isLogged(req, res, next) {
 }
 
 require("../controllers/auth");
-require("../bots/telegram");
 require("../db");
 
 router.use(isLogged);
@@ -34,20 +33,10 @@ function genToken(body) {
 }
 
 const isAuthenticated = (req, res, next) => {
-  // console.log(req.user.email);
   var token = req.headers.token || req.cookies.token || req.query.token;
+  // console.log(req.user.email);
+
   if (!token) return res.status(401).send("Unauthorised");
-  // console.log(
-  //   "HEADERS",
-  //   req.headers,
-  //   "\n",
-  //   "QUERY",
-  //   req.query,
-  //   "\n",
-  //   "COOKIES",
-  //   req.cookies,
-  //   "\n"
-  // );
   jwt.verify(token, process.env.AUTHJWT, function (err, decoded) {
     if (err) {
       return res.status(401).send("Unauthorised");
@@ -56,7 +45,6 @@ const isAuthenticated = (req, res, next) => {
     const duration = moment.duration(expiry_time.diff(moment()));
     var days = duration.asDays();
     console.log(duration.asMinutes(), duration.asDays());
-
     if (days < 29) {
       console.log("Refrshing token");
       // refresh_token = genRefreshToken(body);
@@ -67,7 +55,6 @@ const isAuthenticated = (req, res, next) => {
       //   httpOnly: true,
       //   domain,
       // });
-
       res.cookie("token", token, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
@@ -87,5 +74,6 @@ router.use("/user", isAuthenticated, user);
 
 router.use("/admin", isAdmin, require("./admin"));
 router.use("/auth", require("./auth"));
+
 
 module.exports = router;

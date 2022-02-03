@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { PageVideo } = require("@root/db");
 
-
 router.get("/", async (req, res) => {
   try {
     const page_video = await PageVideo.findForAdmin();
@@ -15,7 +14,7 @@ router.get("/", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    const page_videos = await PageVideo.createByAdmin(req.body);
+    const page_videos = await PageVideo.createOrUpdateByAdmin(req.body);
     res.json(page_videos);
   } catch (error) {
     console.error(error);
@@ -23,10 +22,9 @@ router.post("/create", async (req, res) => {
   }
 });
 
-
 router.get("/toggle-active/", async (req, res) => {
   try {
-    var { id } = req.query;
+    const { id } = req.query;
     await PageVideo.toggleByAdmin(id);
     res.send({ success: true });
   } catch (err) {
@@ -37,15 +35,13 @@ router.get("/toggle-active/", async (req, res) => {
 
 router.get("/delete/", async (req, res) => {
   try {
-    var { id } = req.query;
-    await PageVideo.deleteByAdmin(id);
+    const { id } = req.query;
+    await PageVideo.findByIdAndDelete(id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).send({ success: false, message: "Internal server error" });
   }
 });
-
-
 
 module.exports = router;

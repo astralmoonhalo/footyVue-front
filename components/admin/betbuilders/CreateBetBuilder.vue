@@ -190,7 +190,7 @@ export default {
   },
   watch: {
     "setting.category"(val) {
-      //this.setting.id = null;
+
     }
   },
   methods: {
@@ -251,7 +251,7 @@ export default {
         const rules = this.$store.getters.lookupPreMatchRules;
         return Object.assign(
           {},
-          ...Object.values(rules).map(item => ({ [item.id]: item }))
+          ...Object.values(rules).map(item => ({ [item._id]: item }))
         );
       }
     },
@@ -280,7 +280,7 @@ export default {
           .filter(x => x.category == this.setting.category)
           .map(x => {
             return {
-              value: x.id,
+              value: x._id,
               label: x.label
             };
           });

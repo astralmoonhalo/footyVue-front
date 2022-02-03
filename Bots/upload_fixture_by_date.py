@@ -16,7 +16,6 @@ from fixture_formatter import FixtureFormatter
 s3 = boto3.client('s3')
 bucket = "footyamigo-fixtures"
 
-formatter = FixtureFormatter()
 
 ca = certifi.where()
 
@@ -30,6 +29,7 @@ nan = None
 
 def upload_fixture(fixture):
     try:
+        formatter = FixtureFormatter()
         formatted_fixture = eval(str(formatter.format(fixture)))
 
         fixture_id = fixture.get("id")

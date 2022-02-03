@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "location": "pre-match-alerts",
+    "title": "How PreMatch Alerts Page Works?",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646503203?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 2,
+    "location": "in-play-alerts",
+    "title": "Inplay strategy video",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646554655?h=de9998a4d7&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"INPLAY - How it Works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 3,
+    "location": "betting-systems",
+    "title": "Betting Systems Video",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/645858872?h=0a8aabd359&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"How It Works - Betting System.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 4,
+    "location": "bet-builders",
+    "title": "Bet Builder",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646580251?h=92b945b2ec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"Bet Builder Page how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 5,
+    "location": "fixtures",
+    "title": "Fixture Video",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646602184?h=939c03086c&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"fixture page how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 6,
+    "location": "dashboard",
+    "title": "Dashboard",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/663138591?h=0512400a6b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"welcome video tour main.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 7,
+    "location": "streaks",
+    "title": "How it works Streaks ",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/657521073?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 10,
+    "location": "help",
+    "title": "Introduction Video",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646975174?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 12,
+    "location": "help",
+    "title": "How to Create Strategies",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646700107?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 18,
+    "location": "help",
+    "title": "The Streak Page",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/657521073?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 19,
+    "location": "help",
+    "title": "How to BackTest Strategies",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646811158?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 20,
+    "location": "help",
+    "title": "Betting Systems Page",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646714860?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 21,
+    "location": "help",
+    "title": "How to Steal Strategies",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/646710426?h=29b1644fec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"PREMATCH how it works.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 22,
+    "location": "filters",
+    "title": "How Filters Works?",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/665010347?h=0512400a6b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"welcome video tour main.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  },
+  {
+    "id": 23,
+    "location": "help",
+    "title": "Sample Away Win Strategy",
+    "video_url": "<div style=\"padding:56.25% 0 0 0;position:relative;\"><iframe src=\"https://player.vimeo.com/video/666878017?h=0512400a6b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"position:absolute;top:0;left:0;width:100%;height:100%;\" title=\"welcome video tour main.mp4\"></iframe></div><script src=\"https://player.vimeo.com/api/player.js\"></script>"
+  }
+]

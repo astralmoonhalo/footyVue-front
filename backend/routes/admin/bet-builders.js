@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 
 router.get("/id", async (req, res) => {
   try {
-    const bet_builder = await BetBuilder.findByIdAdmin(req.query.id);
+    const bet_builder = await BetBuilder.findById(req.query.id);
     res.json(bet_builder);
   } catch (error) {
     console.error(error);
@@ -24,10 +24,7 @@ router.get("/id", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    const bet_builder =
-      req.body.id == null
-        ? await BetBuilder.createByAdmin(req.body)
-        : await BetBuilder.editByAdmin(req.body);
+    const bet_builder = await BetBuilder.createOrUpdateByAdmin(req.body);
     res.json(bet_builder);
   } catch (error) {
     console.error(error);
@@ -49,7 +46,7 @@ router.get("/toggle-active/", async (req, res) => {
 router.get("/delete/", async (req, res) => {
   try {
     var { id } = req.query;
-    await BetBuilder.deleteByAdmin(id);
+    await BetBuilder.findByIdAndDelete(id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);
@@ -57,7 +54,7 @@ router.get("/delete/", async (req, res) => {
   }
 });
 
-router.get("/outcomes", async function(req, res, next) {
+router.get("/outcomes", async function (req, res, next) {
   try {
     const outcomes = await Outcome.findBetBuilders();
     res.send(outcomes);

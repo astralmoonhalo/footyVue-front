@@ -139,7 +139,6 @@ export default {
     },
     async trustStrategy(id, index) {
       await this.$axios.trustStrategy(id);
-      // this.refreshTable();
       this.strategies[index].trusted = true;
     },
     async cloneStrategy(id) {
@@ -148,9 +147,7 @@ export default {
     },
     async untrustStrategy(id, index) {
       await this.$axios.untrustStrategy(id);
-      // const index = this.strategies.findIndex( strategy => strategy.id > id);
       this.strategies[index].trusted = false;
-      // this.refreshTable();
     },
     async toggleActiveStatus(id, index) {
       await this.$axios.toggleActiveStatus(id);
@@ -159,9 +156,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.alerts-table {
-  /* font-weight: 500; */
-}
-</style>

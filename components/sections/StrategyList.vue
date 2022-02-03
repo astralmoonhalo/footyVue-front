@@ -29,6 +29,15 @@
             <component class="icon-left" :is="mode.icon" />
             <span class="text">{{ mode.label }}</span>
           </b-button>
+          <b-button
+            class="footy-button"
+            :to="`/${strategyType}/${upcomingModel.slug}`"                        
+            :key="upcomingModel.slug"
+            v-if="$auth.user.subscription.plan_id==1"
+          >
+            <component class="icon-left" :is="upcomingModel.icon" />
+            <span class="text">{{ upcomingModel.label }}</span>
+          </b-button>
         </div>
 
         <div class="search-box-holder bg-lightpink">
@@ -105,8 +114,8 @@ export default {
         { label: "Strategies", slug: "", icon: BellIcon },
         { label: "Preset", slug: "preset-alerts", icon: PresetIcon },
         { label: "Explore", slug: "explore-alerts", icon: ExploreIcon },
-        { label: "UpComing", slug: "upcoming", icon: ExploreIcon },
       ],
+      upcomingModel: { label: "UpComing", slug: "upcoming", icon: ExploreIcon },
       initialized: false,
       alerts: [],
       loading: false,
@@ -148,7 +157,7 @@ export default {
 
   methods: {
     async deleteStrategy(id) {
-      var index = this.alerts.findIndex((item) => item.id === id);
+      var index = this.alerts.findIndex((item) => item._id === id);
 
       if (index !== -1) {
         this.alerts.splice(index, 1);

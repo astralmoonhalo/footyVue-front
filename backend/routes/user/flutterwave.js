@@ -13,7 +13,7 @@ router.get("/buy-pro", async (req, res) => {
   try {
     const { country_id } = req.query;
     const domain = req.protocol + "://" + req.hostname;
-    const user = await User.findById(req.user.user.id);
+    const user = await User.findById(req.user.user._id);
     const country = await LocalCountry.findById(country_id);
     const chargeData = {
       tx_ref: uuid.v4(),
@@ -25,14 +25,14 @@ router.get("/buy-pro", async (req, res) => {
       redirect_url: domain + "/payment",
       //cancel_url: domain + "/profile"
       meta: {
-        user_id: user.id,
+        user_id: user._id,
         plan_id: process.env.PADDLE_PRO_ID || 1
       },
       customer: {
         email: user.email,
         //phone_number: "08102909304",
         name: user.firstname + " " + user.lastname,
-        user_id: user.id
+        user_id: user._id
       },
       customizations: {
         title: "FootyAmigo Pro Subscription",

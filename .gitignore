@@ -19,7 +19,7 @@ lib-cov
 ServiceAccountKey.json
 # Coverage directory used by tools like istanbul
 coverage
-
+strategies.json
 # nyc test coverage
 .nyc_output
 

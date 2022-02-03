@@ -1,0 +1,65 @@
+[
+  {
+    "id": 2,
+    "name": "Nigeria",
+    "currency": "NGN",
+    "pro_price": 14160,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-nigeria"
+  },
+  {
+    "id": 3,
+    "name": "Benin",
+    "currency": "CFA",
+    "pro_price": 19555,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-benin"
+  },
+  {
+    "id": 4,
+    "name": "South Africa",
+    "currency": "ZAR",
+    "pro_price": 525,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-sa"
+  },
+  {
+    "id": 5,
+    "name": "Kenya",
+    "currency": "KES",
+    "pro_price": 3725,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-kenya"
+  },
+  {
+    "id": 6,
+    "name": "Ghana",
+    "currency": "GHS",
+    "pro_price": 210,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-ghana"
+  },
+  {
+    "id": 7,
+    "name": "Uganda",
+    "currency": "UGX",
+    "pro_price": 120480,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-uganda"
+  },
+  {
+    "id": 8,
+    "name": "Tanzania",
+    "currency": "TZS",
+    "pro_price": 78873,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-tanzania"
+  },
+  {
+    "id": 9,
+    "name": "Morocco",
+    "currency": "MAD",
+    "pro_price": 315,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-morocco"
+  },
+  {
+    "id": 10,
+    "name": "Botswana",
+    "currency": "BWP",
+    "pro_price": 393,
+    "payment_url": "https://flutterwave.com/pay/footy-amigo-botswana"
+  }
+]

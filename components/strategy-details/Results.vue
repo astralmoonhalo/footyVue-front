@@ -85,9 +85,6 @@
     <LoadMore v-if="loading" />
 
     <MugenScroll :handler="getResults" :should-handle="!loading" v-if="!loaded">
-      <!--div class="centered my-4">
-        <b-spinner variant="primary" v-if="loading"></b-spinner>
-      </div-->
     </MugenScroll>
     <h4 v-if="!loading && loaded" class="centered text-grey">
       <template v-if="fixtures.length"> No more results ! </template>
@@ -96,7 +93,6 @@
         date
       </template>
     </h4>
-
     <FixtureScrollPicker v-model="selected_scroller" />
   </div>
 </template>

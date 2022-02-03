@@ -118,7 +118,7 @@ export default {
         .filter(rule => rule.category == this.category)
         .map(rule => {
           return {
-            value: rule.id,
+            value: rule._id,
             text: rule.label
           };
         });

@@ -23,7 +23,7 @@ export default {
 
       this.filter = filter;
 
-      //console.log(this.filter, this.filter.id);
+      //console.log(this.filter, this.filter._id);
     }
   }
 };

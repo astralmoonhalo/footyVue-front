@@ -1,6 +1,10 @@
 <template>
   <div>
-    <CreateStrategy v-model="form" :pageTitle="pageTitle" :strategyType="strategyType" />
+    <CreateStrategy
+      v-model="form"
+      :pageTitle="pageTitle"
+      :strategyType="strategyType"
+    />
   </div>
 </template>
 
@@ -9,7 +13,7 @@ import CreateStrategy from "@/components/strategy-creation/CreateStrategy";
 
 function initialInPlayForm() {
   return {
-    id: null,
+    _id: null,
     title: "",
     strategy_prematch_rules: [],
     strategy_inplay_rules: [],
@@ -21,10 +25,10 @@ function initialInPlayForm() {
       time: "atMinuteX",
       from: 0,
       to: 45,
-      minute: 45
+      minute: 45,
     },
     note: "",
-    has_note: false
+    has_note: false,
   };
 }
 
@@ -33,12 +37,12 @@ export default {
     return {
       form: initialInPlayForm(),
       pageTitle: "New InPlay Strategy",
-      strategyType: "in-play-alerts"
+      strategyType: "in-play-alerts",
     };
   },
   components: {
-    CreateStrategy
-  }
+    CreateStrategy,
+  },
 };
 </script>
 

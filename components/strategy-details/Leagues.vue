@@ -117,9 +117,9 @@ export default {
     }
   },
   mounted() {
-    //this.getFilter(this.id);
+  
     this.included_ids = this.$jsonify(this.filter.leagues);
-    //this.$store.dispatch("fetchLeagues");
+  
     this.getLeagues();
   },
   methods: {
@@ -167,7 +167,7 @@ export default {
 
       const body = { leagues };
       const res = await this.$axios.$post(
-        "/user/strategies/update-leagues/" + this.filter.id,
+        "/user/strategies/update-leagues/" + this.filter._id,
         body
       );
       await this.$bvToast.toast(

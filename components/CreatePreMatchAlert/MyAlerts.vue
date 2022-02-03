@@ -51,13 +51,13 @@
 
         <template #cell(actions)="data">
           <b-dropdown split size="sm" text="View" class="actions-dropdown">
-            <b-dropdown-item :to="'/pre-match-alerts/edit/' + data.item.id"
+            <b-dropdown-item :to="'/pre-match-alerts/edit/' + data.item._id"
               >Edit</b-dropdown-item
             >
             <!-- <b-dropdown-item href="#">Track</b-dropdown-item> -->
             <b-dropdown-item href="#">Clone</b-dropdown-item>
             <b-dropdown-item href="#">Share</b-dropdown-item>
-            <b-dropdown-item @click="deleteStrategy(data.item.id)">
+            <b-dropdown-item @click="deleteStrategy(data.item._id)">
               <span class="text-danger">Delete </span>
             </b-dropdown-item>
           </b-dropdown>

@@ -23,7 +23,7 @@ router.get("/roadmap", async (req, res) => {
 
 router.get("/id", async (req, res) => {
   try {
-    const update = await Update.findByIdAdmin(req.query.id);
+    const update = await Update.findById(req.query.id);
     res.json(update);
   } catch (error) {
     console.error(error);

@@ -634,7 +634,7 @@ export default {
         font-weight: 600;
         font-size: 15px;
         line-height: 24px;
-        text-transform: capitalize;
+        text-transform: uppercase;
         color: rgba(34, 38, 34, 0.7);
       }
     }

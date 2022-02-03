@@ -163,14 +163,7 @@
               Pro
             </b-badge>
           </template>
-          <template #cell(actions)="data">
-            <b-button
-              class="footy-button"
-              @click="issueSubscription(edit_user_form.email, data.item.id)"
-            >
-              Add to user
-            </b-button>
-          </template>
+          
         </b-table>
       </div>
     </b-modal>

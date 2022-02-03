@@ -120,7 +120,7 @@ export default {
         case "stats":
           if (
             numeric_only.includes(this.setting.first_team) ||
-            this.setting.first_rule_id == 480
+            this.setting.first_rule_id == "61ee94f00a8dcd4cc1bfc7d1"
           ) {
             return [{ text: "Numeric", value: "numeric" }];
           } else {

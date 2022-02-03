@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!breakdownMode" class="picks-head " style="">
+    <div v-if="!breakdownMode" class="picks-head" style="">
       <!-- <h3 class="mr-4 responsive-h3">
           Picked Matches on {{ $moment(selected_date).format("ll") }}
         </h3> -->
@@ -17,7 +17,7 @@
           class="btn centered btn-light text-grey"
           style="font-weight: 500"
         >
-          <span class="material-icons-outlined mr-2" style="font-size: 17px;">
+          <span class="material-icons-outlined mr-2" style="font-size: 17px">
             clear
           </span>
           Clear Strike Rate
@@ -74,7 +74,7 @@
     </div>
     <div
       v-else
-      style="min-height:200px; align-items:center; display:grid"
+      style="min-height: 200px; align-items: center; display: grid"
       class=""
     >
       <LoadMore v-if="loading" />
@@ -83,7 +83,7 @@
           <b-button
             class="date-wrapper"
             block
-            style="font-weight:500"
+            style="font-weight: 500"
             variant="light"
             @click="changeDate(date)"
             :id="date"
@@ -135,9 +135,7 @@
           </template>
         </div>
       </template>
-      <h4 v-else class="centered text-grey">
-        No picks for this date
-      </h4>
+      <h4 v-else class="centered text-grey">No picks for this date</h4>
     </div>
 
     <ModalOnMobile v-model="show_fixture_details" v-if="show_fixture_details">
@@ -177,7 +175,7 @@ export default {
     id: String,
     type: String,
     filter: Object,
-    includedLeagues: Object
+    includedLeagues: Object,
   },
   data() {
     return {
@@ -195,8 +193,8 @@ export default {
         "picked_matches",
         "strike_rate",
         "fair_odd",
-        "action"
-      ]
+        "action",
+      ],
     };
   },
   components: {
@@ -206,16 +204,17 @@ export default {
     BreakdownByLeague,
     StrategyDetails,
 
-    FixtureDatePicker
+    FixtureDatePicker,
   },
 
   watch: {
     selected_date() {
-      // this.getPicks(this.filter.id);
-    }
+      // this.getPicks(this.filter._id);
+    },
   },
   mounted() {
-    this.getPicks(this.filter.id);
+    
+    this.getPicks(this.filter._id);
     this.$store.dispatch("fetchLeagues");
   },
   computed: {
@@ -235,12 +234,13 @@ export default {
         const fair_odd = this.getFairOdd(strike_rate);
         const data = {
           league_id,
-          league: `<span class="flag-icon flag-icon-${league.iso ||
-            "un"}"> </span> <span>${league.name}</span>`,
+          league: `<span class="flag-icon flag-icon-${
+            league.iso || "un"
+          }"> </span> <span>${league.name}</span>`,
           picked_matches,
           strike_rate,
 
-          fair_odd
+          fair_odd,
         };
         breakdown.push(data);
       }
@@ -251,7 +251,7 @@ export default {
     },
     fairOdd() {
       return this.getFairOdd(this.strikeRate);
-    }
+    },
   },
   methods: {
     async showStats(fixture_id) {
@@ -263,7 +263,7 @@ export default {
     },
     groupFixturesByDate(picks) {
       const dates = {};
-      picks.forEach(pick => {
+      picks.forEach((pick) => {
         var date = this.$moment
           .utc(pick.sending_time ? pick.sending_time * 1000 : pick.updated_at)
           .local()
@@ -279,7 +279,7 @@ export default {
               .startOf("day")
               .unix(),
             picks: [],
-            date
+            date,
           };
         }
         dates[date].picks.push(pick);
@@ -292,7 +292,7 @@ export default {
     },
     groupFixturesByLeague(picks) {
       const leagues = {};
-      picks.forEach(pick => {
+      picks.forEach((pick) => {
         var { league_id, league_name, country_name, iso } = pick;
 
         var group = leagues[league_id];
@@ -301,7 +301,7 @@ export default {
             name: league_name,
             picks: [],
             country_name,
-            iso
+            iso,
           };
         }
         leagues[league_id].picks.push(pick);
@@ -309,7 +309,7 @@ export default {
       return leagues;
     },
     getStrikeRate(picks) {
-      const picks_with_hit = picks.filter(x => x.strike);
+      const picks_with_hit = picks.filter((x) => x.strike);
       // const picks_with_hit_or_miss = picks.filter(x => x.strike != null);
       return Math.round((picks_with_hit.length / picks.length) * 100) || 0;
     },
@@ -329,7 +329,7 @@ export default {
         await this.$axios.get("/user/strategies/picks/delete/" + id);
       }
 
-      const index = this.picks.findIndex(x => x._id == id);
+      const index = this.picks.findIndex((x) => x._id == id);
       console.log("WOW", index);
       if (index >= 0) {
         this.picks.splice(index, 1);
@@ -340,12 +340,12 @@ export default {
       this.show_fixture_details = false;
     },
     async deleteLeague(league_id) {
-      const params = { strategy_id: this.filter.id, league_id };
+      const params = { strategy_id: this.filter._id, league_id };
       await this.$axios.$get("/user/strategies/picks/league/delete/", {
-        params
+        params,
       });
 
-      this.picks = this.picks.filter(pick => pick.league_id != league_id);
+      this.picks = this.picks.filter((pick) => pick.league_id != league_id);
     },
     async getFixture(id) {
       const fixture = await this.$axios.$get("/user/fixtures/id/" + id);
@@ -356,39 +356,27 @@ export default {
       return fixture;
     },
 
-    // async showStats(id) {
-    //   console.log("FIXTUREID", id);
-    //   const index = this.picks.findIndex(x => x.id == id);
-    //   if (index >= 0) {
-    //     const pick = this.picks[index];
-    //     var fixture = pick.fixture;
-    //     if (!fixture) {
-    //       fixture = await this.getFixture(pick.fixture_id);
-    //       this.picks[index].fixture = fixture;
-    //     }
-    //     this.selected_fixture = fixture;
-    //   }
-    // },
+
     async clearStrike() {
-      const params = { strategy_id: this.filter.id };
+      const params = { strategy_id: this.filter._id };
       await this.$axios.$get("/user/strategies/picks/clearstrike", { params });
-      await this.getPicks(this.filter.id);
+      await this.getPicks(this.filter._id);
     },
     async getPicks(strategy_id) {
       this.loading = true;
       const params = { strategy_id, date: this.selected_date };
       const { picks } = await this.$axios.$get("/user/strategies/picks/", {
-        params
+        params,
       });
-      var sending_time = Math.max(...picks.map(pick => pick.sending_time));
+      var sending_time = Math.max(...picks.map((pick) => pick.sending_time));
       // console.log(picks);
       picks.sort((x, y) => {
         x.sending_time - y.sending_time;
       });
-      this.picks = picks.map(pick => {
+      this.picks = picks.map((pick) => {
         return {
           ...pick.fixture,
-          ...pick
+          ...pick,
         };
       });
       this.loading = false;
@@ -397,8 +385,8 @@ export default {
         .local()
 
         .format("LL");
-    }
-  }
+    },
+  },
 };
 </script>
 

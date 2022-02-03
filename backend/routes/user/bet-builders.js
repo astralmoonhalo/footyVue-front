@@ -8,11 +8,14 @@ const isSubscribed = require("@root/middlewares/isSubscribed");
 // const types = new Set(["last_25", "last_10", "last_7", "last_5"]);
 const matches = new Set(["played_overall", "played_home", "played_away"]);
 
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 600 });
+
 function parseBetBuilderRule(rule, type) {
   var { team, location, value, code, comparator, category } = rule;
   const equations = {
     "<=": "$lte",
-    ">=": "$gte"
+    ">=": "$gte",
   };
   // console.log("TYPE", type);
   const equation = equations[comparator];
@@ -38,8 +41,8 @@ function parseBetBuilderRule(rule, type) {
         return {
           $and: [
             { [home_key]: { [equation]: Number(value) } },
-            { [away_key]: { [equation]: Number(value) } }
-          ]
+            { [away_key]: { [equation]: Number(value) } },
+          ],
         };
       } else {
         key = `${team}.${last_x}${code}`;
@@ -49,7 +52,7 @@ function parseBetBuilderRule(rule, type) {
   return query;
 }
 function parseBetBuilderRules(rules, type) {
-  return rules.map(rule => {
+  return rules.map((rule) => {
     return parseBetBuilderRule(rule, type);
   });
 }
@@ -73,19 +76,19 @@ function formatRules(rules, type) {
   const teams = {
     home: "Home Team",
     away: "Away Team",
-    both: "Both"
+    both: "Both",
   };
   const locations = {
     home: "H",
     away: "A",
-    overall: "All"
+    overall: "All",
   };
   const comparators = {
     ">=": "+",
-    "<=": "-"
+    "<=": "-",
   };
 
-  return rules.map(rule => {
+  return rules.map((rule) => {
     var team, location;
     var { id, label, code } = rule;
     value = rule.value;
@@ -115,33 +118,38 @@ function formatRules(rules, type) {
 }
 
 async function fetchBetBuilders(type, limit) {
-  const bet_builders = await BetBuilder.findActive();
-  // console.log(JSON.stringify(bet_builders, null, 2));
+  const cacheKey = "bet_builders." + type + "." + limit;
+  if (!myCache.has(cacheKey)) {
+    const bet_builders = await BetBuilder.findActive();
+    // console.log(JSON.stringify(bet_builders, null, 2));
 
-  const bet_builders_formatted = [];
-  for (var bet_builder of bet_builders) {
-    const { rules, title, outcome, probabilities } = bet_builder;
+    const bet_builders_formatted = [];
+    for (var bet_builder of bet_builders) {
+      const { rules, title, outcome, probabilities } = bet_builder;
 
-    rules.push(...probabilities);
-    const formatted = formatRules(rules, type);
-    const query = parseBetBuilderRules(rules, type);
-    //console.log(await fetchBetBuilderFixtures({ rules, rule_maps }))
-    const fixtures = await Fixture.fetchBetBuilders(query, outcome, limit);
-    //console.log(fixtures);
-    bet_builders_formatted.push({
-      title,
-      outcome,
-      rules: formatted,
-      data: fixtures
-    });
+      rules.push(...probabilities);
+      const formatted = formatRules(rules, type);
+      const query = parseBetBuilderRules(rules, type);
+      //console.log(await fetchBetBuilderFixtures({ rules, rule_maps }))
+      const fixtures = await Fixture.fetchBetBuilders(query, outcome, limit);
+      //console.log(fixtures);
+      bet_builders_formatted.push({
+        title,
+        outcome,
+        rules: formatted,
+        data: fixtures,
+      });
+    }
+    // console.log("FORMATTED", bet_builders_formatted);
+    const result = Object.assign(
+      {},
+      ...bet_builders_formatted.map((bet) => {
+        return { [bet.outcome]: bet };
+      })
+    );
+    myCache.set(cacheKey, result, 60);
   }
-  // console.log("FORMATTED", bet_builders_formatted);
-  return Object.assign(
-    {},
-    ...bet_builders_formatted.map(bet => {
-      return { [bet.outcome]: bet };
-    })
-  );
+  return myCache.get(cacheKey);
 }
 router.use("/", isSubscribed);
 
@@ -153,7 +161,6 @@ router.get("/", async (req, res) => {
       limit = 2;
     }
     const bet_builders = await fetchBetBuilders(type, limit);
-    //const pre_match_rules_obj = rulesAsObject(pre_match_rules);
     res.json(bet_builders);
   } catch (error) {
     console.error(error);
@@ -161,7 +168,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/outcomes", async function(req, res, next) {
+router.get("/outcomes", async function (req, res, next) {
   try {
     const outcomes = await Outcome.findBetBuilders();
     res.send(outcomes);

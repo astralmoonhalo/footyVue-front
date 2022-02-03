@@ -154,13 +154,6 @@ export default {
     //     this.$store.commit("setStrategyType", "in-play-alerts");
     //   }
     // },
-    // setting: {
-    //   deep: true,
-    //   immediate: true,
-    //   handler(val) {
-    //     this.$store.commit("setInPlaySetting", this.$jsonify(val));
-    //   },
-    // },
   },
   components: {
     PreMatchRules,

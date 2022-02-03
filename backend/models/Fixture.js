@@ -1,655 +1,746 @@
-const { Model, raw } = require("objection");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 const moment = require("moment");
-const e = require("express");
+const StrategyFormatter = require("@root/formatters/StrategyFormatter");
+const Streak = require("./Streak");
+const Rule = require("./Rule");
+const FixtureSchema = new Schema(
+  {
+    fixture_id: Number,
+  },
+  { strict: false }
+);
 
-class Fixture extends Model {
-  // Table name is the only required property.
-  static get tableName() {
-    return "fixtures";
-  }
+// FixtureSchema.index({ fixture_name: 'text', league_name: 'text', country_name: 'text' });
 
-  static get jsonAttributes() {
-    return ["weather"];
-  }
+const Fixture = mongoose.model("Fixture", FixtureSchema);
+// FixtureSchema.
 
-  static get modifiers() {
-    return {
-      filterByDate(builder, date) {
-        const startOfDay = moment(date)
-          .startOf("day")
-          .unix();
-        const endOfDay = moment(date)
-          .endOf("day")
-          .unix();
-        builder.whereBetween("timestamp", [startOfDay, endOfDay]);
-      },
-      selectIdOnly(builder) {
-        builder.select("id");
-      },
-      liveGames(builder) {
-        const hour_ago = moment
-          .utc()
-          .subtract(1, "hour")
-          .unix();
-        builder.where({ status: "LIVE" }).where("timestamp", ">", hour_ago);
-      }
-    };
-  }
+// createIndex(
+//   { fixture_name: 'text', league_name: 'text', country_name: 'text' }
+// )
+const LIVE_STATUSES = ["LIVE", "HT", "PEN_LIVE", "BREAK", "ET"];
 
-  static get relationMappings() {
-    // Importing models here is a one way to avoid require loops.
-    const AggregateStat = require("./AggregateStat");
-    const Probability = require("./Probability");
-    const Stat = require("./Stat");
-    const Result = require("./Result");
-    const Odd = require("./Odd");
-    const League = require("./League");
-    const Event = require("./Event");
-    const Country = require("./Country");
-
-    return {
-      events: {
-        relation: Model.HasManyRelation,
-        modelClass: Event,
-        join: {
-          from: "fixtures.id",
-          to: "events.fixture_id"
-        }
-      },
-      result: {
-        relation: Model.HasOneRelation,
-        modelClass: Result,
-        join: {
-          from: "fixtures.id",
-          to: "results.fixture_id"
-        }
-      },
-      league: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: League,
-        join: {
-          from: "fixtures.league_id",
-          to: "leagues.id"
-        }
-      },
-      country: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Country,
-        join: {
-          from: "fixtures.country_id",
-          to: "countries.id"
-        }
-      },
-      home_aggregates: {
-        relation: Model.HasManyRelation,
-        modelClass: AggregateStat,
-        join: {
-          from: "fixtures.id",
-          to: "aggregate_stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "home");
-        }
-      },
-
-      away_aggregates: {
-        relation: Model.HasManyRelation,
-        modelClass: AggregateStat,
-        join: {
-          from: "fixtures.id",
-          to: "aggregate_stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "away");
-        }
-      },
-      home: {
-        relation: Model.HasOneRelation,
-        modelClass: AggregateStat,
-        join: {
-          from: "fixtures.id",
-          to: "aggregate_stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "home").where("type", "all");
-        }
-      },
-
-      away: {
-        relation: Model.HasOneRelation,
-        modelClass: AggregateStat,
-        join: {
-          from: "fixtures.id",
-          to: "aggregate_stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "away").where("type", "all");
-        }
-      },
-      preodds: {
-        relation: Model.HasOneRelation,
-        modelClass: Odd,
-        join: {
-          from: "fixtures.id",
-          to: "odds.fixture_id"
-        },
-        filter(builder) {
-          builder.where("type", "preodds");
-        }
-      },
-      liveodds: {
-        relation: Model.HasOneRelation,
-        modelClass: Odd,
-        join: {
-          from: "fixtures.id",
-          to: "odds.fixture_id"
-        },
-        filter(builder) {
-          builder.where("type", "liveodds");
-        }
-      },
-      peakodds: {
-        relation: Model.HasOneRelation,
-        modelClass: Odd,
-        join: {
-          from: "fixtures.id",
-          to: "odds.fixture_id"
-        },
-        filter(builder) {
-          builder.where("type", "peakodds");
-        }
-      },
-      probability: {
-        relation: Model.HasOneRelation,
-        modelClass: Probability,
-        join: {
-          from: "fixtures.id",
-          to: "probabilities.fixture_id"
-        }
-      },
-
-      home_stat: {
-        relation: Model.HasOneRelation,
-        modelClass: Stat,
-        join: {
-          from: "fixtures.id",
-          to: "stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "home");
-        }
-      },
-      away_stat: {
-        relation: Model.HasOneRelation,
-        modelClass: Stat,
-        join: {
-          from: "fixtures.id",
-          to: "stats.fixture_id"
-        },
-        filter(builder) {
-          builder.where("location", "away");
-        }
-      }
-    };
-  }
-}
-
-Fixture.findUpcoming = function(conditions) {
-  const query = this.query().withGraphJoined(
-    "[home(overallStats),away(overallStats)]",
+const ACTIVE_STATUSES = [
+  "LIVE",
+  "HT",
+  "PEN_LIVE",
+  "BREAK",
+  "ET",
+  "NS",
+  "FT",
+  "FT_PEN",
+  "AET",
+];
+Fixture.findByDateGrouped = function (date) {
+  date = moment.utc(date, "YYYY-MM-DD").toDate();
+  return Fixture.aggregate([
     {
-      joinOperation: "rightJoin"
-    }
-  );
-  for (var condition of conditions) {
-    query.where(condition);
-  }
-  return query.modifiers({
-    overallStats: builder => {
-      builder.where("type", "100");
-    }
-  });
-};
-
-Fixture.findById = function(id) {
-  return this.query().findById(id);
-};
-
-function formatRawFixture(rawFixture) {
-  const {
-    fixtures,
-    probability,
-    league,
-    result,
-    country,
-    home_stats,
-    away_stats,
-    pre_odds,
-    live_odds,
-    peak_odds,
-    home,
-    away,
-    events
-  } = rawFixture;
-  return {
-    ...league,
-    ...country,
-    ...result,
-    probability,
-    stats: {
-      home: home_stats,
-      away: away_stats
+      $match: { date, status: { $in: ACTIVE_STATUSES } },
     },
-    pre_odds,
-    live_odds,
-    peak_odds,
-    home,
-    away,
-    events,
-    ...fixtures
+    {
+      $project: { fixture_id: 1, country_name: 1, iso: 1, country_id: 1 },
+    },
+    {
+      $group: {
+        _id: "$country_id",
+        id: { $first: "$country_id" },
+        name: { $first: "$country_name" },
+        iso: { $first: "$iso" },
+        fixture_ids: { $push: "$fixture_id" },
+      },
+    },
+    { $sort: { name: 1 } },
+    {
+      $addFields: {
+        fixtures: [],
+        hidden: true,
+      },
+    },
+  ]);
+};
+
+const getRequiredFields = () => {
+  return {
+    "home.last_25": 0,
+    "home.last_7": 0,
+    "home.last_5": 0,
+    "home.last_10": 0,
+    "away.last_25": 0,
+    "away.last_7": 0,
+    "away.last_5": 0,
+    "away.last_10": 0,
+
+    events_json: 0,
+    goals_json: 0,
+    cards_json: 0,
+    //corners_json: 0,
+    live_odds: 0,
+    result: 0,
   };
-}
-function fixtureQuery() {
-  return Fixture.query()
-    .select(
-      "fixtures.*",
-      "probability.*",
-      "result.*",
-      "league.*",
-      "country.*",
-      "home_stats.*",
-      "away_stats.*",
-      "pre_odds.*",
-      "live_odds.*",
-      "peak_odds.*",
-      "home.*",
-      "away.*"
-    )
-    .leftJoinRelated("probability")
-    .leftJoinRelated("league(forFixture)")
-    .leftJoinRelated("result(forFixture)")
-    .leftJoinRelated("country(forFixture)")
-    .leftJoin("stats as home_stats", function() {
-      this.on("fixtures.id", "=", "home_stats.fixture_id").andOn(
-        "fixtures.home_id",
-        "=",
-        "home_stats.team_id"
-      );
-    })
-    .leftJoin("stats as away_stats", function() {
-      this.on("fixtures.id", "=", "away_stats.fixture_id").andOn(
-        "fixtures.away_id",
-        "=",
-        "away_stats.team_id"
-      );
-    })
-    .leftJoin("odds as pre_odds", function() {
-      this.on("fixtures.id", "=", "pre_odds.fixture_id").andOn(
-        "pre_odds.type",
-        "=",
-        raw("'preodds'")
-      );
-    })
-    .leftJoin("odds as live_odds", function() {
-      this.on("fixtures.id", "=", "live_odds.fixture_id").andOn(
-        "live_odds.type",
-        "=",
-        raw("'liveodds'")
-      );
-    })
-    .leftJoin("odds as peak_odds", function() {
-      this.on("fixtures.id", "=", "peak_odds.fixture_id").andOn(
-        "live_odds.type",
-        "=",
-        raw("'peakodds'")
-      );
-    })
-    .leftJoin("aggregate_stats as home", function() {
-      this.on("fixtures.id", "=", "home.fixture_id")
-        .andOn("home.type", "=", raw("'all'"))
-        .andOn("home.team_id", "=", "fixtures.home_id");
-    })
-    .leftJoin("aggregate_stats as away", function() {
-      this.on("fixtures.id", "=", "away.fixture_id")
-        .andOn("away.type", "=", raw("'all'"))
-        .andOn("away.team_id", "=", "fixtures.away_id");
-    })
-    .options({ nestTables: true });
-}
-
-Fixture.findOneWithAggregates = async function(id) {
-  const rawFixture = await fixtureQuery().findById(id);
-  const fixtureWithEvents = await Fixture.query()
-    .findById(id)
-    .withGraphFetched("events");
-  rawFixture["events"] = fixtureWithEvents["events"];
-  return formatRawFixture(rawFixture);
 };
 
-Fixture.getTodaysCount = function() {
-  const startOfDay = moment
-    .utc()
-    .startOf("day")
-    .unix();
-  const endOfDay = moment
-    .utc()
-    .endOf("day")
-    .unix();
-  return this.query()
-    .whereBetween("timestamp", [startOfDay, endOfDay])
-    .resultSize();
+const getAddFields = () => {
+  return {
+    ht_score: "$result.ht_score",
+    ft_score: "$result.ft_score",
+    events: "$events_json",
+    corners: "$corners_json",
+  };
 };
 
-Fixture.getTodays = function() {
-  const startOfDay = moment
-    .utc()
-    .startOf("day")
-    .unix();
-  const endOfDay = moment
-    .utc()
-    .endOf("day")
-    .unix();
-  return this.query().whereBetween("timestamp", [startOfDay, endOfDay]);
-};
-
-Fixture.getLiveCount = function() {
-  const hour_ago = moment
-    .utc()
-    .subtract(1, "hour")
-    .unix();
-  return this.query()
-    .where({ status: "LIVE" })
-    .where("timestamp", ">", hour_ago)
-    .resultSize();
-};
-
-Fixture.fetchLive = function() {
-  const hour_ago = moment
-    .utc()
-    .subtract(1, "hour")
-    .unix();
-  return this.query()
-    .withGraphFetched({
-      home_stat: true,
-      probability: true,
-      away_stat: true,
-      preodds: true,
-      liveodds: true,
-      peakodds: true
-    })
-    .where({ status: "LIVE" })
-    .where("timestamp", ">", hour_ago);
-};
-
-Fixture.findByTeamSeasonId = function({
-  team_id,
-  timestamp,
-  season_id,
-  limit,
-  keys,
-  aggregate_keys
-}) {
-  const subQuery = this.query()
-    .leftJoinRelated("result")
-    //.where("status", "FT")
-    .select(...aggregate_keys)
-    .where("home_id", team_id)
-    .orWhere("away_id", team_id)
-    .where("timestamp", "<", timestamp)
-    .where("season_id", season_id)
-    .orderBy("timestamp", "desc");
-  if (limit) {
-    subQuery.limit(limit);
+Fixture.findByDateSorted = async function (
+  date,
+  page = 1,
+  sort_by_time = false,
+  ft_results = false,
+  upcoming = false,
+  filters
+) {
+  page = Math.max(Number(page || 1), 0);
+  date = moment.utc(date, "YYYY-MM-DD").toDate();
+  const perPage = 20;
+  const skip = (page - 1) * perPage;
+  const requiredFields = getRequiredFields();
+  delete requiredFields["live_odds"];
+  var extra_conditions = { status: { $in: ACTIVE_STATUSES } };
+  if (ft_results) {
+    Object.assign(extra_conditions, { status: { $in: ["FT", "FT_PEN"] } });
   }
-  subQuery.as("subquery");
-
-  const query = this.query()
-    .select(...keys)
-    .from(subQuery);
-  //console.log(query.toKnexQuery().toString());
-  return query;
-  //, "home_id", "away_id", "timestamp", "season_id")
-};
-
-Fixture.findByIds = async function(ids) {
-  console.log(ids, "IDS");
-  const rawFixtures = await fixtureQuery().whereIn("fixtures.id", ids);
-  const fixturesWithEvents = await Fixture.query()
-    .whereIn("fixtures.id", ids)
-    .withGraphFetched("events");
-  //console.log(rawFixtures, "ARW");
-  const hasMap = Object.assign(
-    {},
-    ...fixturesWithEvents.map(rawFixture => {
+  // console.log(upcoming)
+  if (upcoming) {
+    Object.assign(extra_conditions, {
+      status: "NS",
+      timestamp: { $gt: moment().unix() },
+    });
+  }
+  // console.log(filters);
+  if (filters && filters.length) {
+    const pre_match_rules = await Rule.find({
+      _id: { $in: filters.map((filter) => filter.rule_id) },
+    }).lean();
+    // console.log(pre_match_rules);
+    const pre_match_rules_map = Object.assign(
+      {},
+      ...pre_match_rules.map((rule) => {
+        return {
+          [rule._id]: rule,
+        };
+      })
+    );
+    console.log(pre_match_rules_map);
+    filters = filters.map((filter) => {
       return {
-        [rawFixture.id]: rawFixture
+        ...pre_match_rules_map[filter.rule_id],
+        ...filter,
       };
-    })
+    });
+    // console.log(filters);
+    const formatter = new StrategyFormatter();
+    const [pre_match_conditions, pre_match_fields] =
+      formatter.query_for_pre_match_rules({ strategy_prematch_rules: filters });
+    Object.assign(extra_conditions, { $and: pre_match_conditions });
+  }
+
+  const conditions = [
+    {
+      $match: {
+        ...extra_conditions,
+        date,
+      },
+    },
+    {
+      $sort: { timestamp: 1 },
+    },
+  ];
+  conditions.push(
+    ...[
+      { $skip: skip },
+      { $limit: perPage },
+      {
+        $addFields: getAddFields(),
+      },
+      {
+        $project: requiredFields,
+      },
+    ]
   );
-  console.log(rawFixtures.length, "ITEMS");
-  return rawFixtures.map(rawFixture => {
-    rawFixture["events"] = hasMap[rawFixture.fixtures.id]["events"];
-    return formatRawFixture(rawFixture);
+
+  // var [total, strategies] = await Promise.all([
+  //   query.resultSize(),
+  //   query.offset(skip).limit(perPage),
+  // ]);
+  // if (sort_by_time) {
+  //   query.push({
+  //     $sort: { timestamp: 1 }
+  //   });
+  // }
+
+  const fixtures = await Fixture.aggregate(conditions);
+  const total = await Fixture.count({
+    ...extra_conditions,
+    date,
+  });
+
+  return [fixtures, total];
+};
+
+Fixture.findByIds = async function (ids) {
+  return Fixture.aggregate([
+    {
+      $match: { fixture_id: { $in: ids.map((id) => Number(id)) } },
+    },
+    {
+      $addFields: getAddFields(),
+    },
+    {
+      $project: getRequiredFields(),
+    },
+    { $sort: { date_time: 1 } },
+  ]);
+};
+
+Fixture.findByFixtureId = async function (id) {
+  const fixtures = await Fixture.aggregate([
+    {
+      $match: { fixture_id: Number(id) },
+    },
+    {
+      $addFields: getAddFields(),
+    },
+    {
+      $project: {
+        result: 0,
+      },
+    },
+  ]);
+  return fixtures[0];
+};
+
+Fixture.findLive = async function (page = 1) {
+  page = Math.max(Number(page || 1), 0);
+  const perPage = 50;
+  const skip = (page - 1) * perPage;
+
+  const requiredFields = getRequiredFields();
+  delete requiredFields["live_odds"];
+  const query = Fixture.aggregate([
+    {
+      $match: {
+        status: { $in: [...LIVE_STATUSES] },
+        date_time: {
+          $gt: moment.utc().subtract(2, "hours").toDate(),
+        },
+      },
+    },
+    { $sort: { timestamp: -1 } },
+    { $skip: skip },
+    { $limit: perPage },
+    {
+      $addFields: getAddFields(),
+    },
+    {
+      $project: requiredFields,
+    },
+  ]);
+  const fixtures = await query;
+  return fixtures;
+};
+
+Fixture.findLiveFeed = async function (ids = []) {
+  ids = ids.map((id) => Number(id));
+  const requiredFields = getRequiredFields();
+  delete requiredFields["live_odds"];
+  const query = Fixture.aggregate([
+    {
+      $match: {
+        fixture_id: { $in: ids },
+      },
+    },
+    {
+      $addFields: getAddFields(),
+    },
+    {
+      $project: requiredFields,
+    },
+  ]);
+  const fixtures = await query;
+  return fixtures;
+};
+
+Fixture.findResults = async function (
+  strategy,
+  type = "past",
+  date = moment().utc().unix(),
+  page = 1
+) {
+  page = Math.max(Number(page || 1), 0);
+  console.log(date * 1000);
+  date = moment
+    .utc(date * 1000)
+    .startOf("day")
+    .toDate();
+  const perPage = 50;
+  const skip = (page - 1) * perPage;
+  // console.log("types is", type);
+  const formatter = new StrategyFormatter();
+  const match = formatter.format(strategy);
+  // console.log(JSON.stringify(match, null, 2));
+  // console.log(match)
+  var extra = {
+    date,
+  };
+  var date_time = -1;
+  if (type == "past") {
+    Object.assign(extra, {
+      status: { $in: ["FT", "FT_PEN"] },
+      result_updated: true,
+      "result.ft_score": { $ne: null },
+      ["result." + strategy.outcome.code]: { $in: [true, false] },
+    });
+  } else {
+    Object.assign(extra, {
+      status: { $nin: ["FT", "FT_PEN"] },
+      timestamp: { $gt: moment().unix() },
+      //result_updated: true
+    });
+    date_time = 1;
+  }
+  Object.assign(match, extra);
+  // console.log(match);
+  // console.log(strategy.outcome);
+
+  const fixtures = await Fixture.aggregate([
+    {
+      $match: {
+        ...match,
+        // $or: [{ "result.home_win": true }, { "result.away_win": true }]
+      },
+    },
+    { $sort: { date_time } },
+    { $skip: skip },
+    { $limit: perPage },
+    {
+      $addFields: {
+        ...getAddFields(),
+        is_hit: { $eq: ["$result." + strategy.outcome.code, true] },
+      },
+    },
+    {
+      $project: getRequiredFields(),
+    },
+  ]);
+
+  //TURN RESULTS TO PICKS
+  // const Pick = require("./Pick");
+
+  // for (var fixture of fixtures) {
+  //   const sending_time = moment.utc(
+  //     (fixture.timestamp - strategy.timer.minute) * 1000
+  //   );
+
+  //   await Pick.updateOne(
+  //     { fixture_id: fixture["fixture_id"], strategy_id: strategy["id"] },
+  //     {
+  //       $set: {
+  //         fixture_id: fixture["fixture_id"],
+  //         user_id: strategy["user_id"],
+  //         strategy_id: strategy["id"],
+  //         league_id: fixture["league_id"],
+  //         type: "pre-match",
+  //         status: "sent",
+  //         home_name: fixture["home_name"],
+  //         away_name: fixture["away_name"],
+  //         is_public: strategy["is_public"],
+  //         minute: strategy["timer"]["minute"],
+  //         extra_minute: null,
+  //         sending_time: sending_time.unix(),
+  //         _fixture_id: `${fixture["_id"]}`,
+  //         _strategy_id: `${strategy["_id"]}`,
+  //         created_at: sending_time.toDate(),
+  //         updated_at: sending_time.toDate()
+  //       }
+  //     },
+  //     { upsert: true }
+  //   );
+  // }
+
+  return fixtures;
+};
+
+Fixture.getTodaysCount = function () {
+  var date = moment.utc().startOf("day").toDate();
+  return this.count({ date });
+};
+
+Fixture.getLiveCount = function () {
+  return this.count({
+    status: {
+      $in: LIVE_STATUSES,
+    },
+    date_time: {
+      $gt: moment.utc().subtract(2, "hours").toDate(),
+    },
   });
 };
 
-function populateMore(fixture) {
-  var team_types = {
-    winning_team: null,
-    losing_team: null,
-    favorite: null,
-    underdog: null,
-    favorite_playing_away: null,
-    underdog_playing_away: null,
-    favorite_playing_home: null,
-    underdog_playing_home: null
+Fixture.fetchBetBuilders = async function (query, outcome, limit = 100) {
+  const now = moment().utc().unix();
+  const twoDaysLater = moment().utc().add(2, "days").endOf("day").unix();
+  const match = {
+    $and: query,
+    [`pre_odds.${outcome}`]: { $gt: 0 },
+    timestamp: { $gte: now, $lte: twoDaysLater },
   };
-  var odd_types = ["pre_odds", "live_odds", "peak_odds"];
 
-  if (fixture["stats"]["home"]["goals"] == fixture["stats"]["away"]["goals"]) {
-    team_types["winning_team"] = null;
-    team_types["losing_team"] = null;
-  } else if (
-    fixture["stats"]["home"]["goals"] > fixture["stats"]["away"]["goals"]
-  ) {
-    team_types["winning_team"] = "home";
-    team_types["losing_team"] = "away";
-  } else {
-    team_types["winning_team"] = "away";
-    team_types["losing_team"] = "home";
-  }
-  if (
-    fixture["pre_odds"]["home_win"] ==
-    fixture["pre_odds"]["away_win"]
-  ) {
-    team_types["underdog"] = null;
-    team_types["favorite"] = null;
-    team_types["favorite_playing_away"] = null;
-    team_types["underdog_playing_away"] = null;
-    team_types["favorite_playing_home"] = null;
-    team_types["underdog_playing_home"] = null;
-  } else if (
-    fixture["pre_odds"]["home_win"] >
-    fixture["pre_odds"]["away_win"]
-  ) {
-    team_types["underdog"] = "home";
-    team_types["favorite"] = "away";
-    team_types["favorite_playing_away"] = "away";
-    team_types["underdog_playing_home"] = "home";
-  } else {
-    team_types["underdog"] = "away";
-    team_types["favorite"] = "home";
-    team_types["underdog_playing_away"] = "away";
-    team_types["favorite_playing_home"] = "home";
-  }
+  // console.log(JSON.stringify(match, null, 2));
+  var extraParams = { $limit: limit };
+  const fixtures = await Fixture.aggregate([
+    {
+      $match: {
+        ...match,
+        // $or: [{ "result.home_win": true }, { "result.away_win": true }]
+      },
+    },
+    { $sort: { date_time: 1 } },
+    // {
+    //   $addFields: {
+    //     key: { $concat: [ "$item", " - ", "$description" ] },
+    //   }
+    // },
+    extraParams,
+    {
+      $project: {
+        fixture_id: 1,
+        home_position: 1,
+        away_position: 1,
+        fixture_name: 1,
+        home_goals: 1,
+        away_goals: 1,
+        home_name: 1,
+        away_name: 1,
+        home_logo: 1,
+        away_logo: 1,
+        country: 1,
+        iso: 1,
+        is_live: 1,
+        minute: 1,
+        timestamp: 1,
+        status: 1,
+        pre_odds: 1,
+        ht_score: "$result.ht_score",
+        ft_score: "$result.ft_score",
+        events: "$events_json",
+        [outcome]: "$pre_odds." + outcome,
+        key: { $concat: [outcome, "_", { $toString: "$fixture_id" }] },
+      },
+    },
+  ]);
 
-  for (var odd_type of odd_types) {
-    fixture[odd_type]["home"] = {
-      ft_result: fixture[odd_type]["home_win"],
-      ht_result: fixture[odd_type]["home_win_ht"],
-      dnb: fixture[odd_type]["dnb_home"]
+  return fixtures;
+};
+
+Fixture.search = function (searchText, type) {
+  const startOfDay = moment().startOf("day").unix();
+  const endOfDay = moment().add(1, "days").unix();
+  var extraParams;
+  if (type == "upcoming") {
+    extraParams = {
+      status: {
+        $in: ["LIVE", "HT", "PEN_LIVE", "BREAK", "ET", "NS"],
+      },
+      timestamp: { $gte: startOfDay },
     };
-    fixture[odd_type]["away"] = {
-      ft_result: fixture[odd_type]["away_win"],
-      ht_result: fixture[odd_type]["away_win_ht"],
-      dnb: fixture[odd_type]["dnb_away"]
+  } else {
+    extraParams = {
+      status: { $in: ["FT", "FT_PEN", "AET"] },
+      timestamp: { $lte: endOfDay },
     };
   }
-  for (var team_type in team_types) {
-    var team = team_types[team_type];
-    fixture["stats"][team_type] = fixture["stats"][team];
-    fixture["pre_odds"][team_type] = fixture["pre_odds"][team];
-    fixture["live_odds"][team_type] = fixture["live_odds"][team];
-    fixture["peak_odds"][team_type] = fixture["peak_odds"][team];
+
+  return this.aggregate([
+    {
+      $match: {
+        $text: {
+          $search: searchText,
+        },
+        ...extraParams,
+      },
+    },
+    {
+      $sort: {
+        timestamp: type == "upcoming" ? 1 : -1,
+      },
+    },
+    {
+      $limit: 10,
+    },
+    {
+      $project: {
+        fixture_name: 1,
+        league_name: 1,
+        timestamp: 1,
+        fixture_id: 1,
+        iso: 1,
+        country_name: 1,
+        ft_score: "$result.ft_score",
+      },
+    },
+  ]);
+};
+Fixture.fetchStats = function (fixture_id) {
+  return Fixture.findOne({ fixture_id }, { fixture_id: 1, home: 1, away: 1 });
+};
+
+Fixture.fetchStreak = async function (conditions, form, market, trial) {
+  if (!(form in conditions)) {
+    return [];
   }
-  return fixture;
-}
-Fixture.findByIdsExtended = async function(ids) {
-  const fixtures = await this.findByIds(ids);
-  return fixtures.map(fixture => populateMore(fixture));
-};
+  const { field, label } = conditions[form];
+  const match = {
+    status: "NS",
+    timestamp: {
+      $gte: moment().unix(),
+      $lte: moment().add(72, "hours").unix(),
+    },
+    [`pre_odds.${market}`]: { $gte: 0.01 },
+  };
 
-Fixture.findWithAggregates = async function(date = new Date()) {
-  const startOfDay = moment
-    .utc(date)
-    .startOf("day")
-    .unix();
-  const endOfDay = moment
-    .utc(date)
-    .endOf("day")
-    .unix();
-  const rawFixtures = await this.query()
-    .whereBetween("timestamp", [startOfDay, endOfDay])
-    .select("id");
+  const project = {
+    timestamp: 1,
+    date: 1,
 
-  return Fixture.findByIds(rawFixtures.map(fixture => fixture.id));
-};
-
-Fixture.findExtendedWithAggregates = async function(date = new Date()) {
-  const startOfDay = moment
-    .utc(date)
-    .startOf("day")
-    .unix();
-  const endOfDay = moment
-    .utc(date)
-    .endOf("day")
-    .unix();
-  const rawFixtures = await this.query()
-    .where({ status: "LIVE" })
-    //.whereBetween("timestamp", [startOfDay, endOfDay])
-    .select("id");
-
-  return Fixture.findByIdsExtended(rawFixtures.map(fixture => fixture.id));
-};
-
-Fixture.findLiveWithAggregates = async function() {
-  const hour_ago = moment()
-    .subtract(1, "day")
-    .unix();
-
-  const rawFixtures = await fixtureQuery()
-    .where("status", "LIVE")
-    .where("timestamp", ">", hour_ago);
-  const fixturesWithEvents = await Fixture.query()
-    .where("status", "LIVE")
-    .where("timestamp", ">", hour_ago)
-    .withGraphFetched("events");
-  //console.log(rawFixtures, "ARW");
-  const hasMap = Object.assign(
-    {},
-    ...fixturesWithEvents.map(rawFixture => {
-      return {
-        [rawFixture.id]: rawFixture
-      };
-    })
+    iso: 1,
+    fixture_id: 1,
+    played: `$${form}.played_${form}`,
+    odds: `$pre_odds.${market}`,
+    hits_per: `$${field}_per`,
+    hits: `$${field}`,
+    fixture_id: 1,
+    fixture_name: 1,
+    country: 1,
+    is_live: 1,
+    minute: 1,
+    timestamp: 1,
+    status: 1,
+    home_position: 1,
+    away_position: 1,
+    [market]: "$pre_odds." + market,
+  };
+  if (!trial) {
+    Object.assign(project, {
+      key: { $concat: [market, "_", { $toString: "$fixture_id" }] },
+      home_name: `$home_name`,
+      away_name: `$away_name`,
+      home_logo: `$home_logo`,
+      away_logo: `$away_logo`,
+    });
+  }
+  if (form == "overall") {
+    Object.assign(project, {
+      name: "$fixture_name",
+      played: { $sum: [`$home.played_overall`, `$away.played_overall`] },
+      hits: { $sum: [`$home.${field}`, `$away.${field}`] },
+      hits_per: {
+        $multiply: [
+          {
+            $divide: [
+              { $sum: [`$home.${field}`, `$away.${field}`] },
+              { $sum: [`$home.played_overall`, `$away.played_overall`] },
+            ],
+          },
+          100,
+        ],
+      },
+    });
+    Object.assign(match, {
+      $and: [
+        {
+          $expr: {
+            $gte: [
+              { $sum: [`$home.played_overall`, `$away.played_overall`] },
+              12,
+            ],
+          },
+        },
+        {
+          $expr: {
+            $gte: [
+              // { $divide: [{ $sum: [`$home.${field}_per`, `$away.${field}_per`] }, 2] },
+              // 75
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      { $sum: [`$home.${field}`, `$away.${field}`] },
+                      {
+                        $sum: [`$home.played_overall`, `$away.played_overall`],
+                      },
+                    ],
+                  },
+                  100,
+                ],
+              },
+              60,
+            ],
+          },
+        },
+      ],
+    });
+  } else {
+    Object.assign(match, {
+      [field + "_per"]: { $gte: 30 },
+      [`${form}.played_${form}`]: { $gte: 6 },
+    });
+  }
+  const pipeline = [
+    {
+      $match: match,
+    },
+    {
+      $sort: { [field + "_per"]: -1, timestamp: 1 },
+    },
+  ];
+  if (form == "overall") {
+    pipeline.push({
+      $addFields: {
+        hits: { $sum: [`$home.${field}`, `$away.${field}`] },
+        hits_per: {
+          $multiply: [
+            {
+              $divide: [
+                { $sum: [`$home.${field}`, `$away.${field}`] },
+                { $sum: [`$home.played_overall`, `$away.played_overall`] },
+              ],
+            },
+            100,
+          ],
+        },
+      },
+    });
+    pipeline.push({
+      $sort: { hits_per: -1, timestamp: 1 },
+    });
+  } else {
+    pipeline.push({
+      $sort: { [field + "_per"]: -1, timestamp: 1 },
+    });
+  }
+  pipeline.push(
+    ...[
+      {
+        $limit: 100,
+      },
+      {
+        $project: project,
+      },
+    ]
   );
-  console.log(rawFixtures.length, "ITEMS");
-  return rawFixtures.map(rawFixture => {
-    rawFixture["events"] = hasMap[rawFixture.fixtures.id]["events"];
-    return formatRawFixture(rawFixture);
-  });
+  const fixtures = await Fixture.aggregate(pipeline);
+  return [
+    {
+      form,
+      fixtures,
+      label,
+    },
+  ];
 };
 
-Fixture.findByIdsOlds = function(ids) {
-  return this.query()
-    .select("league.*", "fixtures.*")
-    .leftJoinRelated("league")
-    .withGraphFetched({
-      probability: true,
-      home_stat: true,
-      away_stat: true,
-      preodds: true,
-      home: true,
-      away: true,
-      liveodds: true,
-      peakodds: true
-    })
-    .findByIds(ids);
+Fixture.fetchStreaks = async function (market = "home_win", trial) {
+  const streak_rules = require("../streak_rules");
+  var { conditions, title, description } = streak_rules[market];
+  const home = await Fixture.fetchStreak(conditions, "home", market, trial);
+  const away = await Fixture.fetchStreak(conditions, "away", market, trial);
+  const overall = await Fixture.fetchStreak(
+    conditions,
+    "overall",
+    market,
+    trial
+  );
+  const streaks = [...home, ...away, ...overall];
+  const streak = await Streak.findByMarket(market);
+  if (streak) {
+    var { title, description, subtitle, header } = streak;
+  }
+  return { title, description, streaks, subtitle, header };
 };
-
-Fixture.create = function(data) {
-  return this.query().upsertGraph(data, {
-    relate: [
-      "probability",
-      "result",
-      "home_stat",
-      "away_stat",
-      "preodds",
-      "liveodds",
-      "peakodds"
-    ],
-    insertMissing: true
-  });
-};
-
-function stringifyJson(myObject) {
-  Object.keys(myObject).map(function(key) {
-    if (typeof myObject[key] == "object") {
-      myObject[key] = JSON.stringify(myObject[key]);
-    }
-  });
-}
-Fixture.bulkCreate = function(fixtures) {
-  const separated = {
-    fixture: { table_name: "fixtures", items: [] },
-    probability: { table_name: "probabilities", items: [] },
-    result: { table_name: "results", items: [] },
-    home_stat: { table_name: "stats", items: [] },
-    away_stat: { table_name: "stats", items: [] },
-    preodds: { table_name: "odds", items: [] },
-    liveodds: { table_name: "odds", items: [] },
-    peakodds: { table_name: "odds", items: [] }
-  };
-  for (var fixture of fixtures) {
-    for (var key in fixture) {
-      const data = fixture[key];
-      if (data) {
-        stringifyJson(data);
-        separated[key].items.push(data);
-      }
+/*
+Fixture.updateMany(
+  { },
+  {
+    $rename: {
+      "result.u05_1h_away_goals": "result.u05_away_goals_1h",
+      "result.u05_1h_home_goals": "result.u05_home_goals_1h",
+      "result.u05_2h_away_goals": "result.u05_away_goals_2h",
+      "result.u05_2h_home_goals": "result.u05_home_goals_2h",
+      "result.u15_1h_away_goals": "result.u15_away_goals_1h",
+      "result.u15_1h_home_goals": "result.u15_home_goals_1h",
+      "result.u15_2h_away_goals": "result.u15_away_goals_2h",
+      "result.u15_2h_home_goals": "result.u15_home_goals_2h",
+      "result.o05_1h_away_cards": "result.o05_away_cards_1h",
+      "result.o05_1h_away_corners": "result.o05_away_corners_1h",
+      "result.o05_1h_away_goals": "result.o05_away_goals_1h",
+      "result.o05_1h_cards": "result.o05_cards_1h",
+      "result.o05_1h_corners": "result.o05_corners_1h",
+      "result.o05_1h_goals": "result.o05_goals_1h",
+      "result.u05_1h_goals": "result.u05_goals_1h",
+      "result.o05_1h_home_cards": "result.o05_home_cards_1h",
+      "result.o05_1h_home_corners": "result.o05_home_corners_1h",
+      "result.o05_1h_home_goals": "result.o05_home_goals_1h",
+      "result.o05_2h_away_cards": "result.o05_away_cards_2h",
+      "result.o05_2h_away_corners": "result.o05_away_corners_2h",
+      "result.o05_2h_away_goals": "result.o05_away_goals_2h",
+      "result.o05_2h_cards": "result.o05_cards_2h",
+      "result.o05_2h_corners": "result.o05_corners_2h",
+      "result.o05_2h_goals": "result.o05_goals_2h",
+      "result.u05_2h_goals": "result.u05_goals_2h",
+      "result.o05_2h_home_cards": "result.o05_home_cards_2h",
+      "result.o05_2h_home_corners": "result.o05_home_corners_2h",
+      "result.o05_2h_home_goals": "result.o05_home_goals_2h",
+      "result.o15_1h_away_cards": "result.o15_away_cards_1h",
+      "result.o15_1h_away_corners": "result.o15_away_corners_1h",
+      "result.o15_1h_away_goals": "result.o15_away_goals_1h",
+      "result.o15_1h_cards": "result.o15_cards_1h",
+      "result.o15_1h_corners": "result.o15_corners_1h",
+      "result.o15_1h_goals": "result.o15_goals_1h",
+      "result.u15_1h_goals": "result.u15_goals_1h",
+      "result.o15_1h_home_cards": "result.o15_home_cards_1h",
+      "result.o15_1h_home_corners": "result.o15_home_corners_1h",
+      "result.o15_1h_home_goals": "result.o15_home_goals_1h",
+      "result.o15_2h_away_cards": "result.o15_away_cards_2h",
+      "result.o15_2h_away_corners": "result.o15_away_corners_2h",
+      "result.o15_2h_away_goals": "result.o15_away_goals_2h",
+      "result.o15_2h_cards": "result.o15_cards_2h",
+      "result.o15_2h_corners": "result.o15_corners_2h",
+      "result.o15_2h_goals": "result.o15_goals_2h",
+      "result.u15_2h_goals": "result.u15_goals_2h",
+      "result.o15_2h_home_cards": "result.o15_home_cards_2h",
+      "result.o15_2h_home_corners": "result.o15_home_corners_2h",
+      "result.o15_2h_home_goals": "result.o15_home_goals_2h",
+      "result.o25_1h_away_corners": "result.o25_away_corners_1h",
+      "result.o25_1h_cards": "result.o25_cards_1h",
+      "result.o25_1h_corners": "result.o25_corners_1h",
+      "result.o25_1h_home_corners": "result.o25_home_corners_1h",
+      "result.o25_2h_away_corners": "result.o25_away_corners_2h",
+      "result.o25_2h_cards": "result.o25_cards_2h",
+      "result.o25_2h_corners": "result.o25_corners_2h",
+      "result.o25_2h_home_corners": "result.o25_home_corners_2h",
+      "result.o35_1h_away_corners": "result.o35_away_corners_1h",
+      "result.o35_1h_corners": "result.o35_corners_1h",
+      "result.o35_1h_home_corners": "result.o35_home_corners_1h",
+      "result.o35_2h_away_corners": "result.o35_away_corners_2h",
+      "result.o35_2h_corners": "result.o35_corners_2h",
+      "result.o35_2h_home_corners": "result.o35_home_corners_2h",
+      "result.o45_1h_away_corners": "result.o45_away_corners_1h",
+      "result.o45_1h_corners": "result.o45_corners_1h",
+      "result.o45_1h_home_corners": "result.o45_home_corners_1h",
+      "result.o45_2h_away_corners": "result.o45_away_corners_2h",
+      "result.o45_2h_corners": "result.o45_corners_2h",
+      "result.o45_2h_home_corners": "result.o45_home_corners_2h",
+      "result.o55_1h_corners": "result.o55_corners_1h",
+      "result.o55_2h_corners": "result.o55_corners_2h"
     }
   }
-  console.log(JSON.stringify(separated, null, 2));
-  return this.transaction(async trx => {
-    for (var key in separated) {
-      if (separated[key].items.length) {
-        await trx
-          .insert(separated[key].items)
-          .into(separated[key].table_name)
-          .onConflict()
-          .merge();
-      }
-    }
-  });
-};
+).then(x => console.log(x));*/
 
-// const data = {
-//   team_id: 94165,
-//   timestamp: 1631950300,
-//   season_id: 18175,
-//   limit: 100,
-// };
-// Fixture.findByTeamSeasonId(data).then((lesson) =>
-//   console.log("LESSON", lesson)
-// );
 module.exports = Fixture;

@@ -61,10 +61,11 @@ export default {
       } else {
         stat_key = key;
       }
-      if (team == "home") {
-        return Number(this.fixture.home[stat_key]);
+      let data = this.fixture[team][stat_key];
+      if (data != null) {
+        return Number(data);
       } else {
-        return Number(this.fixture.away[stat_key]);
+        return "N/A";
       }
     },
   },
@@ -73,7 +74,6 @@ export default {
       let stats = statKeysGrouped[this.stat].map((item) => {
         if (typeof item === "string") {
           if (item == "League Pos.") {
-          
             return {
               label: "League Pos.",
               home: this.fixture["home_position"],

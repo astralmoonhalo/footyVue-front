@@ -49,7 +49,7 @@
           <template #cell(active)="data">
             <footy-switch
               v-model="data.value"
-              @click.native.prevent="toggleBettingSystem(data.item.id)"
+              @click.native.prevent="toggleBettingSystem(data.item._id)"
             >
             </footy-switch>
           </template>
@@ -62,7 +62,7 @@
               <b-dropdown-item @click="toggleShowEdit(data.index)"
                 >Edit</b-dropdown-item
               >
-              <b-dropdown-item @click="deleteBettingSystem(data.item.id)">
+              <b-dropdown-item @click="deleteBettingSystem(data.item._id)">
                 <span class="text-danger">Delete </span>
               </b-dropdown-item>
             </b-dropdown>
@@ -90,7 +90,7 @@ export default {
         video_url: null,
         video_description: null,
         learn: null,
-        presets: []
+        preset_ids: []
       },
       edit: {
         id: null,
@@ -100,7 +100,7 @@ export default {
         video_url: null,
         video_description: null,
         learn: null,
-        presets: []
+        preset_ids: []
       }
     };
   },

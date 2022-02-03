@@ -98,20 +98,15 @@ export default {
     LivePreview,
   },
   watch: {
-    // setting: {
-    //   deep: true,
-    //   handler(val) {
-    //     this.$store.commit("setSetting", val);
-    //   },
-    // },
+
     selectedCategory: {
       immediate: true,
       handler() {
         const rules = this.filteredPrematchRules;
 
         if (rules) {
-          const { id, min, max } = rules[0];
-          Object.assign(this.setting, { values: [min, max], rule_id: id });
+          const { _id, min, max } = rules[0];
+          Object.assign(this.setting, { values: [min, max], rule_id: _id });
         }
       },
     },
@@ -139,7 +134,7 @@ export default {
     },
     prematchRulesOptions() {
       return this.filteredPrematchRules.map((rule) => {
-        const { id: value, label: text } = rule;
+        const { _id: value, label: text } = rule;
         return {
           value,
           text,

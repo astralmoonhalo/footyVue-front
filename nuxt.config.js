@@ -66,11 +66,6 @@ module.exports = {
           user: { url: "/user/profile", method: "get" },
           // refresh: { url: "/user/refresh-token", method: "get" },
         },
-        // refreshToken: {
-        //   property: "token",
-        //   data: "token",
-        //   // maxAge: 1000 * 60 * 0.5,
-        // },
         autoLogout: true,
         user: {
           property: "user",

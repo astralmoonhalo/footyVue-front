@@ -1,20 +1,19 @@
 <template>
   <b-form>
+
+
     <b-form-group v-for="(schema, name) in schemas" :key="name">
       <label v-if="schema.customLabel">{{ schema.customLabel }}</label>
       <component :is="schema.component" v-model="form[name]" v-bind="schema">
       </component>
     </b-form-group>
-
-
   </b-form>
-  
 </template>
 
 <script>
 export default {
   props: {
-    value: Object
+    value: Object,
   },
   data() {
     return {
@@ -25,14 +24,14 @@ export default {
           customLabel: "Title",
           placeholder: "Under X Play System",
           class: "footy-input",
-          component: "b-input"
+          component: "b-input",
         },
         description: {
           name: "description",
           customLabel: "Description",
           placeholder: "Description under title",
           component: "b-textarea",
-          class: "footy-textarea"
+          class: "footy-textarea",
         },
         roi: {
           type: "number",
@@ -40,7 +39,7 @@ export default {
           customLabel: "ROI %",
           placeholder: "Return on investment %",
           class: "footy-input",
-          component: "b-input"
+          component: "b-input",
         },
 
         video_description: {
@@ -49,7 +48,7 @@ export default {
           placeholder: "Description under video",
           component: "b-textarea",
           class: "footy-textarea",
-          rows: 4
+          rows: 4,
         },
         learn: {
           name: "learn",
@@ -57,7 +56,7 @@ export default {
           placeholder: "What will user learn?",
           component: "b-textarea",
           class: "footy-textarea",
-          rows: 3
+          rows: 3,
         },
         video_embed: {
           type: "text",
@@ -66,17 +65,17 @@ export default {
           placeholder: "",
           rows: 5,
           class: "footy-textarea",
-          component: "b-textarea"
+          component: "b-textarea",
         },
-        presets: {
+        preset_ids: {
           options: [],
-          name: "presets",
+          name: "preset_ids",
           label: "Presets",
 
           rows: 5,
-          component: "footy-vertical-checkbox"
-        }
-      }
+          component: "footy-vertical-checkbox",
+        },
+      },
     };
   },
   computed: {
@@ -86,24 +85,23 @@ export default {
       },
       set(value) {
         this.$emit("input", value);
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.getPresets();
   },
   methods: {
     async getPresets() {
-      const presets = await this.$axios.$get("/admin/presets/active");
-      this.schemas.presets.options = presets.map(preset => {
+      const preset_ids = await this.$axios.$get("/admin/presets/active");
+      this.schemas.preset_ids.options = preset_ids.map((preset) => {
         return {
           text: preset.title,
-          value: preset.id
+          value: preset._id,
         };
       });
-      console.log(presets);
-    }
-  }
+    },
+  },
 };
 </script>
 

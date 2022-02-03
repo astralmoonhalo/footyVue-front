@@ -4,7 +4,7 @@ const isAdmin = async (req, res, next) => {
   if (!req.user) {
     return res.status(401).send({ message: "unauthenticated" });
   }
-  const user = await User.query().select("power").findById(req.user.user.id);
+  const user = await User.findById(req.user.user._id, { power: 1 });
   if (user.power == 10) {
     return next();
   } else {

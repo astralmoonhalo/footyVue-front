@@ -26,6 +26,7 @@
         <div>Please check the following fields</div>
         <div class="p-3">
           <ul class="mb-0">
+  
             <li
               class="text-danger small"
               v-for="error in errors"
@@ -191,7 +192,8 @@ export default {
       errormessages: {
         firstname: "First Name must contains only alphabets",
         lastname: "Last Name must contains only alphabets",
-        email: "Email must be a valid email. Like someone@gmail.com"
+        email: "Email must be a valid email. Like someone@gmail.com",
+        exists: "Email already exists",
       }
     };
   },

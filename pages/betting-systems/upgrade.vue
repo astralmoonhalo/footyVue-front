@@ -3,7 +3,7 @@
     <section class="betting-systems-page-header">
       <b-row no-gutters>
         <b-col>
-          <h1 class="betting-systems-page-title">Betting Systems</h1>
+          <h1 class="betting-systems-page-title">Betting Sytems</h1>
           <div class="betting-systems-page-description">
             Any successful football bettor has a system they follow. We have
             spent time creating these profitable, rigorously tested betting

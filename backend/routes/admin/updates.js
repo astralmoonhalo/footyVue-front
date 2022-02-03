@@ -4,7 +4,7 @@ const { Update } = require("@root/db");
 
 router.get("/", async (req, res) => {
   try {
-    const updates = await Update.findForAdmin();
+    const updates = await Update.find();
     res.json(updates);
   } catch (error) {
     console.error(error);
@@ -43,7 +43,7 @@ router.get("/toggle-completed", async (req, res) => {
 
 router.get("/id", async (req, res) => {
   try {
-    const update = await Update.findByIdAdmin(req.query.id);
+    const update = await Update.findById(req.query.id);
     res.json(update);
   } catch (error) {
     console.error(error);
@@ -51,19 +51,9 @@ router.get("/id", async (req, res) => {
   }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create-or-update", async (req, res) => {
   try {
-    const update = await Update.createByAdmin(req.body);
-    res.json(update);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ success: false, messsage: error });
-  }
-});
-
-router.post("/edit", async (req, res) => {
-  try {
-    const update = await Update.editByAdmin(req.body);
+    const update = await Update.createOrUpdateByAdmin(req.body);
     res.json(update);
   } catch (error) {
     console.error(error);
@@ -74,7 +64,7 @@ router.post("/edit", async (req, res) => {
 router.get("/delete/", async (req, res) => {
   try {
     var { id } = req.query;
-    await Update.deleteByAdmin(id);
+    await Update.findByIdAndDelete(id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);

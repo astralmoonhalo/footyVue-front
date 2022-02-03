@@ -220,14 +220,14 @@ export default {
     return {
       users: [],
       fields: [
-        "id",
+        "_id",
         "email",
         "firstname",
         "created_at",
         "subscription",
         "actions",
       ],
-      plans_fields: ["id", "name", "price", "days", "trial", "actions"],
+      plans_fields: ["_id", "name", "price", "days", "trial", "actions"],
       edit_mode: false,
       add_mode: false,
       edit_user_form: {

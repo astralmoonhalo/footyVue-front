@@ -73,7 +73,6 @@ export default {
     return {
       loading: false,
       tabOpened: false,
-      checkConnectionInterval: null,
     };
   },
   components: {
@@ -82,9 +81,7 @@ export default {
   props: {
     tabIndex: Number,
   },
-  beforeDestroy() {
-    clearInterval(this.checkConnectionInterval);
-  },
+
   methods: {
     async refreshUser() {
       try {
@@ -112,15 +109,8 @@ export default {
         window.open(playStore, "_blank");
       }
       this.tabOpened = true;
-      const instance = this;
-      // clearInterval(this.checkConnectionInterval);
-      // this.checkConnectionInterval = setInterval(async () => {
-      //   await instance.$auth.fetchUser();
-      //   if (instance.$auth.user.phone) {
-      //     clearInterval(instance.checkConnectionInterval);
-      //     instance.tabOpened = false;
-      //   }
-      // }, 2500);
+     
+
     },
   },
 };

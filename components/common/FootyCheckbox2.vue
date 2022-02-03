@@ -57,7 +57,7 @@ export default {
   methods: {
     getVal(option) {
       if (typeof option == "object") {
-        console.log('True');
+
         return option.id;
       } else {
         return option;

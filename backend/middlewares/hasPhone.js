@@ -1,7 +1,7 @@
 const { User } = require("@root/db");
 
 const hasPhone = async (req, res, next) => {
-  const user = await User.query().findById(req.user.user.id);
+  const user = await User.findById(req.user.user._id);
   if (user.phone) {
     return next();
   } else {

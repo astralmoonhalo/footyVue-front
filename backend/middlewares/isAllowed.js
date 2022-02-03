@@ -1,10 +1,10 @@
 const { User } = require("@root/db");
 
 const isAdmin = async (req, res, next) => {
-  if (!req.headers.token=="") {
+  if (!req.headers.token == "") {
     return res.status(401).send({ message: "unauthenticated" });
   }
-  const user = await User.query().select("power").findById(req.user.user.id);
+  const user = await User.select("power").findById(req.user.user._id);
   if (user.power == 10) {
     return next();
   } else {

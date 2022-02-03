@@ -21,7 +21,7 @@
           <div v-else>
             <h6>Strike Rate</h6>
             <p :class="[$getColor(filter.strike_rate, 'text-')]">
-              {{ filter.strike_rate }}%
+              {{ filter.strike_rate | TwoDecimal }}%
             </p>
           </div>
 
@@ -36,10 +36,10 @@
 
               <span class="material-icons-outlined"> expand_more </span>
             </template>
-            <b-dropdown-item @click="untrustStrategy(filter.id)"
+            <b-dropdown-item @click="untrustStrategy(filter._id)"
               >Testing</b-dropdown-item
             >
-            <b-dropdown-item @click="trustStrategy(filter.id)"
+            <b-dropdown-item @click="trustStrategy(filter._id)"
               >Trusted</b-dropdown-item
             >
           </b-dropdown>
@@ -47,7 +47,7 @@
             <h3 class="title mr-2">Active</h3>
             <footy-switch
               v-model="filter.active"
-              @click.native.prevent="toggleActiveStatus(filter.id)"
+              @click.native.prevent="toggleActiveStatus(filter._id)"
             >
             </footy-switch>
           </div>
@@ -84,7 +84,7 @@
           class="footy-button"
           v-for="link in nagivationlinks"
           :key="link.id"
-          :to="`/${type}/${link.slug}/${filter.id}`"
+          :to="`/${type}/${link.slug}/${filter._id}`"
         >
           <component :is="link.icon" class="icon-left"> </component>
           {{ link.label }}
@@ -203,7 +203,7 @@ export default {
 
       this.filter = filter;
 
-      //console.log(this.filter, this.filter.id);
+      //console.log(this.filter, this.filter._id);
     },
     async getResults(id, page) {
       const params = { page, id };
@@ -222,7 +222,7 @@ export default {
     },
     async excludeLeague(league_id) {
       const strategy = await this.$axios.$post(
-        "/user/strategies/exclude-league/" + this.filter.id,
+        "/user/strategies/exclude-league/" + this.filter._id,
         { league_id }
       );
       var index = this.filter.leagues.indexOf(league_id);

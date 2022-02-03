@@ -110,8 +110,7 @@ const seedTemplates = async () => {
 // seedTemplates();
 
 //sendEmail("beezeaal@gmail.com", "MAIKI")
-const email = "beezeaal@gmail.com";
-const emailData = { name: "Vishal", code: 261029 };
+
 /*sendTemplateEmail({
   receiverEmail: email,
   Template: "ACCOUNT_ACTIVATION",

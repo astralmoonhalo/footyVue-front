@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { User, TelegramToken, Strategy, Fixture, Pick } = require("../../db");
+const { User, Strategy, Fixture, Pick } = require("../../db");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
@@ -12,61 +12,60 @@ const serviceSid = process.env.TWILIO_SERVICE_SID;
 const client = require("twilio")(accountSid, authToken, {
   logLevel: "debug",
 });
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 600 });
+
 const hasPhone = require("@root/middlewares/hasPhone");
 
 const uuid = require("uuid");
 
 async function getHighlights() {
-  const fixtures_today = await Fixture.getTodaysCount();
-  const live_games = await Fixture.getLiveCount();
-  const alerts_sent = await Pick.getTodaysCount();
-  const strategies_created = await Strategy.getTotalCount();
-  return [
-    {
-      subtitle: "Matches",
-      count: fixtures_today,
-      title: "Today",
-      id: "fixtures_today",
-    },
-    { subtitle: "Matches", count: live_games, title: "Live", id: "live_games" },
-    { subtitle: "Picks", count: alerts_sent, title: "Today", id: "picks" },
-    {
-      subtitle: "Strategies",
-      count: strategies_created,
-      title: "All time",
-      id: "strategies_created",
-    },
-  ];
+  if (!myCache.has("highlights")) {
+    const fixtures_today = await Fixture.getTodaysCount();
+    const live_games = await Fixture.getLiveCount();
+    const alerts_sent = await Pick.getTodaysCount();
+    const strategies_created = await Strategy.getTotalCount();
+    const highlights = [
+      {
+        subtitle: "Matches",
+        count: fixtures_today,
+        title: "Today",
+        id: "fixtures_today",
+      },
+      {
+        subtitle: "Matches",
+        count: live_games,
+        title: "Live",
+        id: "live_games",
+      },
+      { subtitle: "Picks", count: alerts_sent, title: "Today", id: "picks" },
+      {
+        subtitle: "Strategies",
+        count: strategies_created,
+        title: "All time",
+        id: "strategies_created",
+      },
+    ];
+    myCache.set("highlights", highlights, 30);
+  }
+  return myCache.get("highlights");
 }
 
 async function checkPhoneExist(phone) {
-  const user = await User.query().select("id").findOne({ phone });
+  const user = await User.findOne({ phone }, { id: 1 });
   return user ? true : false;
 }
 async function checkUserHasPhoneAdded(user_id) {
-  const user = await User.query()
-    .select("id")
-    .findOne({ id: user_id })
-    .whereNotNull("phone");
+  const user = await User.findOne({
+    _id: user_id,
+    phone: { $ne: null, $exists: true },
+  });
   return user ? true : false;
 }
 
-// router.use("/", async function (req, res, next) {
-//   const body = { id: req.user.id, email: req.user.email };
-//   const token = jwt.sign({ user: body }, process.env.AUTHJWT);
-//   const domain = process.env.DOMAIN || "dashboard.footyamigo.com";
-//   const cooks = res.cookie("token", token, {
-//     maxAge: 1000 * 60 * 60*24*3,
-//     httpOnly: true,
-//     domain,
-//   });
-//   console.log(cooks);
-//   next();
-// });
-
 router.post("/phone/send-otp", async function (req, res) {
   try {
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const { phone, channel } = req.body;
     console.log(req.body);
     if (await checkUserHasPhoneAdded(user_id)) {
@@ -100,7 +99,7 @@ router.post("/phone/send-otp", async function (req, res) {
 
 router.post("/phone/confirm-otp", async function (req, res) {
   try {
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const { phone } = req.body;
     console.log(req.body);
     if (await checkUserHasPhoneAdded(user_id)) {
@@ -116,10 +115,16 @@ router.post("/phone/confirm-otp", async function (req, res) {
     console.log(verification_check);
 
     if (verification_check.status === "approved") {
-      const user = await User.query().patchAndFetchById(user_id, {
-        phone: verification_check.to,
-      });
-      await User.syncWithMongo(user_id);
+      // const user = await User.query().patchAndFetchById(user_id, {
+      //   phone: verification_check.to,
+      // });
+      const user = await User.findByIdAndUpdate(
+        user_id,
+        {
+          phone: verification_check.to,
+        },
+        { new: true }
+      );
       res.send({ message: "Phone confirmed", success: true });
 
       const message_lines = [
@@ -152,42 +157,9 @@ router.post("/phone/confirm-otp", async function (req, res) {
   }
 });
 
-router.get("/telegram/associate-account", async function (req, res, next) {
-  try {
-    const user_id = req.user.user.id;
-    const telegram_token =
-      (await TelegramToken.findUserToken(user_id)) ||
-      (await TelegramToken.generateToken(user_id));
-    const { activation_token } = telegram_token;
-    const botusername = process.env.BOTUSERNAME || "footyamigobot";
-    res.redirect("https://t.me/" + botusername + "?start=" + activation_token);
-    //res.send({ success: false, message: "Token issued", activation_token })
-  } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: "Interval server error occured" });
-  }
-});
-
-router.get("/telegram/deassociate-account", async function (req, res, next) {
-  try {
-    var user_id = req.user.user.id;
-    await User.delTelegram(user_id);
-    res.json({
-      success: true,
-    });
-  } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: "Interval server error occured" });
-  }
-});
-
 // router.get("/firebase/refresh-token", hasPhone, async function (req, res) {
 //   try {
-//     const user_id = req.user.user.id;
+//     const user_id = req.user.user._id;
 //     const uid = user_id + "";
 //     const firebaseCustomToken = await admin.auth().createCustomToken(uid);
 //     console.log("Login success:", firebaseCustomToken);
@@ -203,14 +175,16 @@ router.get("/telegram/deassociate-account", async function (req, res, next) {
 router.get("/profile", async function (req, res, next) {
   try {
     //console.log(req.user);
-    const user = await User.findById(req.user.user.id);
+    if (!req.user.user._id) {
+      return res.send({ user: {} });
+    }
+    const user = await User.findOne({ _id: req.user.user._id });
     const {
       role,
       id,
       email,
       firstname,
       lastname,
-      telegram,
       subscription,
       seen_intro,
       avatar_id,
@@ -228,7 +202,6 @@ router.get("/profile", async function (req, res, next) {
       firstname,
       lastname,
       fullname: firstname + " " + lastname,
-      telegram,
       subscription,
       seen_intro,
       avatar_id,
@@ -246,8 +219,8 @@ router.get("/profile", async function (req, res, next) {
 
 router.post("/seen-intro/", async (req, res) => {
   try {
-    const user_id = req.user.user.id;
-    await User.doNotShowIntro(user_id);
+    const user_id = req.user.user._id;
+    await User.hideIntroForever(user_id);
     res.send({ success: true });
   } catch (err) {
     console.error(err);
@@ -274,11 +247,12 @@ router.post(
       const result = validationResult(req);
       const hasErrors = !result.isEmpty();
       if (hasErrors) {
+        console.log(result);
         return res
           .status(401)
           .send({ success: false, message: "Invalid Name", errors: result });
       }
-      const user_id = req.user.user.id;
+      const user_id = req.user.user._id;
       await User.updateProfile(user_id, req.body);
       res.send({ success: true });
     } catch (error) {
@@ -299,7 +273,7 @@ router.post("/update-password", async (req, res, next) => {
       if (!user) {
         return res.status(401).send("Login failed. Invalid credentials.");
       }
-      await User.updatePassword(user.id, req.body.new);
+      await User.updatePassword(user._id, req.body.new);
       res.send({ success: true });
     } catch (error) {
       res.status(500).send({ message: "Failed" });
@@ -317,7 +291,7 @@ router.get("/logout", async (req, res, next) => {
 });
 
 router.use("/strategies", require("./strategies"));
-router.use("/countries", require("./countries"));
+// router.use("/countries", require("./countries"));
 router.use("/coinbase", require("./coinbase"));
 router.use("/paddle", require("./paddle"));
 router.use("/transactions", require("./transactions"));

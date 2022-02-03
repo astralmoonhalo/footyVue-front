@@ -1,43 +1,37 @@
-const { Model } = require("objection");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const LocalCountrySchema = new Schema({}, { strict: false });
+const LocalCountry = mongoose.model("LocalCountry", LocalCountrySchema);
 
-class LocalCountry extends Model {
-  static get tableName() {
-    return "local_countries";
-  }
-}
-
-LocalCountry.findForAdmin = function() {
-  return this.query().orderBy("name");
+LocalCountry.findForAdmin = function () {
+  return this.find().sort({ name: 1 });
 };
 
-LocalCountry.findById = function(id) {
-  return this.query().findById(id);
+LocalCountry.deleteByAdmin = function (id) {
+  return this.deleteOne({ id });
 };
 
-LocalCountry.deleteByAdmin = function(id) {
-  return this.query().deleteById(id);
-};
-
-LocalCountry.createByAdmin = function(body) {
+LocalCountry.createByAdmin = function (body) {
   var { name, payment_url, currency, pro_price } = body;
-  return this.query().insert({
+  return this.create({
     name,
     payment_url,
     currency,
-    pro_price
+    pro_price,
   });
 };
 
-LocalCountry.editByAdmin = function(body) {
+LocalCountry.editByAdmin = function (body) {
   var { id, name, payment_url, currency, pro_price } = body;
-  return this.query()
-    .update({
+  return this.findOneAndUpdate(
+    { id },
+    {
       name,
       payment_url,
       currency,
-      pro_price
-    })
-    .where("id", id);
+      pro_price,
+    }
+  );
 };
 
 module.exports = LocalCountry;

@@ -44,7 +44,7 @@
             class="footy-button "
             block
             :disabled="!$store.getters.subscriptionType"
-            @click="viewFilter(filter.id)"
+            @click="viewFilter(filter._id)"
             >View</b-button
           >
         </div>

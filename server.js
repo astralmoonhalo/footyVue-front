@@ -19,19 +19,21 @@ const mongoose = require("mongoose");
 
 const mongoUrl = process.env.MONGO_URL;
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.on("error", error => console.log(error));
+mongoose.connection.on("error", (error) => console.log(error));
 mongoose.Promise = global.Promise;
 
 if (process.env.DOMAIN == "macbook.local") {
   mongoose.set("debug", true);
 }
 
+console.log(mongoUrl);
+
 const options = {
   host,
   port,
   user,
   password,
-  database
+  database,
 };
 //const MySQLStore = require('express-mysql-session')(session);
 //const sessionStore = new MySQLStore(options);
@@ -39,8 +41,8 @@ const options = {
 var MongoDBStore = require("connect-mongodb-session")(session);
 
 var store = new MongoDBStore({
-  uri: process.env.MONGO_URL,
-  collection: "sessions"
+  uri: mongoUrl,
+  collection: "sessions",
 });
 
 app.set("trust proxy", 1); // trust first proxy
@@ -51,7 +53,7 @@ app.use(
     resave: true,
     store,
     saveUninitialized: true,
-    cookie: { secure: true }
+    cookie: { secure: true },
   })
 );
 
@@ -84,7 +86,7 @@ function verifyRequest(req, res, buf, encoding) {
 app.use(
   express.json({
     limit: "32mb",
-    verify: verifyRequest
+    verify: verifyRequest,
   })
 );
 app.use(cookieParser());

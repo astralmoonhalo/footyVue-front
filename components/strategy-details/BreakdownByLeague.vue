@@ -2,22 +2,12 @@
   <div class="breakdown-table text-uppercase">
     <div class="breakdown-table" v-if="items.length">
       <div class="breakdown-table-head breakdown-table-row text-grey bg-light">
-        <div>
-          LEAGUE
-        </div>
-        <div>
-          PICKED MATCHES
-        </div>
-        <div>
-          STRIKE RATE
-        </div>
-        <div>
-          FAIR ODD
-        </div>
+        <div>LEAGUE</div>
+        <div>PICKED MATCHES</div>
+        <div>STRIKE RATE</div>
+        <div>FAIR ODD</div>
 
-        <div>
-          ACTION
-        </div>
+        <div>ACTION</div>
       </div>
 
       <div v-for="(item, i) in items" :key="i" class="breakdown-table-row">
@@ -48,11 +38,16 @@
           class="hit-rate strike-rate-label"
           :class="$getColor(item.strike_rate, 'text-')"
         >
-          {{ item.strike_rate }}%
+          {{ item.strike_rate | TwoDecimal }}%
           <b-progress
             :value="item.strike_rate"
             :max="100"
-            style="border-radius: 10px; margin-top: 10px; max-width:118px; height: 12px;"
+            style="
+              border-radius: 10px;
+              margin-top: 10px;
+              max-width: 118px;
+              height: 12px;
+            "
           ></b-progress>
         </div>
         <div class="fair-odd-label">
@@ -62,7 +57,7 @@
         <div class="actions-value">
           <b-button
             variant="secondary"
-            class="footy-button "
+            class="footy-button"
             @click="$emit('deleteleague', item.league_id)"
             >Remove</b-button
           >
@@ -75,11 +70,11 @@
 <script>
 export default {
   props: {
-    items: Array
+    items: Array,
   },
   data() {
     return {};
-  }
+  },
 };
 </script>
 

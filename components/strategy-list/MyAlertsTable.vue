@@ -2,29 +2,17 @@
   <div class="my-alerts-table">
     <template v-if="strategies.length">
       <div class="my-alerts-table-head my-alerts-table-row text-grey">
-        <div>
-          STRATEGY NAME
-        </div>
+        <div>STRATEGY NAME</div>
         <div>
           {{ strategyType == "pre-match-alerts" ? "HIT RATE" : "STRIKE RATE" }}
         </div>
-        <div>
-          PICKS SENT
-        </div>
-        <div>
-          LAST EDITED
-        </div>
+        <div>PICKS SENT</div>
+        <div>LAST EDITED</div>
 
-        <div>
-          STATUS
-        </div>
-        <div>
-          ACTIVE
-        </div>
+        <div>STATUS</div>
+        <div>ACTIVE</div>
 
-        <div>
-          ACTION
-        </div>
+        <div>ACTION</div>
       </div>
 
       <div
@@ -33,9 +21,7 @@
         class="my-alerts-table-row"
       >
         <div class="strategy-name-item my-alerts-table-item">
-          <div class="my-alerts-table-label">
-            STRATEGY NAME
-          </div>
+          <div class="my-alerts-table-label">STRATEGY NAME</div>
           <div class="my-alerts-item-value">
             <div class="ellipsis-2-lines">
               {{ item.title }}
@@ -59,24 +45,20 @@
           </div>
           <div class="my-alerts-item-value" v-else>
             <span :class="$getColor(item.strike_rate, 'text-')">
-              {{ item.strike_rate }}%
+              {{ item.strike_rate |TwoDecimal}}%
             </span>
           </div>
         </div>
 
         <div class="picks-sent-item my-alerts-table-item">
-          <div class="my-alerts-table-label">
-            PICKS SENT
-          </div>
+          <div class="my-alerts-table-label">PICKS SENT</div>
           <div class="my-alerts-item-value">
             {{ item.picks_sent }}
           </div>
         </div>
 
         <div class="last-edited-item my-alerts-table-item">
-          <div class="my-alerts-table-label">
-            LAST EDITED
-          </div>
+          <div class="my-alerts-table-label">LAST EDITED</div>
           <div class="my-alerts-item-value">
             <span :class="item.updated_at">
               {{ $moment(item.updated_at).format("ddd MMM D YYYY") }}
@@ -85,9 +67,7 @@
         </div>
 
         <div class="status-item my-alerts-table-item">
-          <div class="my-alerts-table-label">
-            STATUS
-          </div>
+          <div class="my-alerts-table-label">STATUS</div>
           <div class="my-alerts-item-value">
             <b-dropdown
               size="sm"
@@ -100,10 +80,10 @@
 
                 <span class="material-icons-outlined"> expand_more </span>
               </template>
-              <b-dropdown-item @click="untrustStrategy(item.id, index)"
+              <b-dropdown-item @click="untrustStrategy(item._id, index)"
                 >Testing</b-dropdown-item
               >
-              <b-dropdown-item @click="trustStrategy(item.id, index)"
+              <b-dropdown-item @click="trustStrategy(item._id, index)"
                 >Trusted</b-dropdown-item
               >
             </b-dropdown>
@@ -111,13 +91,11 @@
         </div>
 
         <div class="active-item my-alerts-table-item">
-          <div class="my-alerts-table-label">
-            ACTIVE
-          </div>
+          <div class="my-alerts-table-label">ACTIVE</div>
           <div class="my-alerts-item-value">
             <footy-switch
               v-model="item.active"
-              @click.native.prevent="toggleActiveStatus(item.id, index)"
+              @click.native.prevent="toggleActiveStatus(item._id, index)"
             >
             </footy-switch>
           </div>
@@ -127,11 +105,11 @@
           <div class="my-alerts-item-value">
             <b-dropdown size="sm" text="View" no-caret class="multiactions-btn">
               <template slot="button-content">
-                <!-- @click="$router.push(`/${data.item.id}/${type}/results`)" -->
-                <div class="view-text" @click="$emit('viewfilter', item.id)">
+                <!-- @click="$router.push(`/${data.item._id}/${type}/results`)" -->
+                <div class="view-text" @click="$emit('viewfilter', item._id)">
                   View
                 </div>
-                <span class="btn-icon " style="">
+                <span class="btn-icon" style="">
                   <svg
                     width="11"
                     height="6"
@@ -150,27 +128,27 @@
                   </svg>
                 </span>
               </template>
-              <b-dropdown-item :to="`/${strategyType}/edit/${item.id}`"
+              <b-dropdown-item :to="`/${strategyType}/edit/${item._id}`"
                 >Edit</b-dropdown-item
               >
 
               <b-dropdown-item
-                :to="`/${strategyType}/results/${item.id}`"
+                :to="`/${strategyType}/results/${item._id}`"
                 v-if="strategyType == 'pre-match-alerts'"
                 >Results</b-dropdown-item
               >
-              <b-dropdown-item :to="`/${strategyType}/picks/${item.id}`"
+              <b-dropdown-item :to="`/${strategyType}/picks/${item._id}`"
                 >Picks</b-dropdown-item
               >
 
-              <b-dropdown-item @click="cloneStrategy(item.id)"
+              <b-dropdown-item @click="cloneStrategy(item._id)"
                 >Clone</b-dropdown-item
               >
-              <!-- <b-dropdown-item @click="$emit('sharefilter', item.id)"
+              <!-- <b-dropdown-item @click="$emit('sharefilter', item._id)"
                 >Share</b-dropdown-item
               > -->
               <b-dropdown-item
-                @click="deleteStrategy(item.id)"
+                @click="deleteStrategy(item._id)"
                 variant="danger"
                 active-class="bg-dangerous"
                 link-class="bg-dangerous"
@@ -182,7 +160,6 @@
           </div>
         </div>
       </div>
-
     </template>
   </div>
 </template>
@@ -193,24 +170,23 @@ import SharerModal from "~/components/SharerModal";
 export default {
   props: {
     strategies: Array,
-    strategyType: String
+    strategyType: String,
   },
   components: {
-    SharerModal
+    SharerModal,
   },
   data() {
     return {
       showSharer: false,
       strategyId: null,
       showStrategy: false,
- 
     };
   },
   methods: {
     async deleteStrategy(id) {
       if (confirm("Are you sure you want to delete this filter?")) {
         await this.$axios.deleteStrategy(id);
-        this.$emit("deleteStrategy", id)
+        this.$emit("deleteStrategy", id);
       }
     },
 
@@ -233,7 +209,7 @@ export default {
 
     async trustStrategy(id, index) {
       await this.$axios.trustStrategy(id);
-      // this.refreshTable();
+
       this.strategies[index].trusted = true;
     },
     async cloneStrategy(id) {
@@ -243,15 +219,14 @@ export default {
 
     async untrustStrategy(id, index) {
       await this.$axios.untrustStrategy(id);
-      // const index = this.strategies.findIndex( strategy => strategy.id > id);
+
       this.strategies[index].trusted = false;
-      // this.refreshTable();
     },
     async toggleActiveStatus(id, index) {
       await this.$axios.toggleActiveStatus(id);
       this.strategies[index].active = !this.strategies[index].active;
-    }
-  }
+    },
+  },
 };
 </script>
 

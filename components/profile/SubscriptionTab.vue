@@ -67,7 +67,7 @@
         >
           <div class="field">
             <h3 class="field-heading">Subscription ID</h3>
-            <p class="field-value">#{{ subscription.id }}</p>
+            <p class="field-value">#{{ subscription._id }}</p>
           </div>
           <div class="field">
             <h3 class="field-heading">Plan</h3>

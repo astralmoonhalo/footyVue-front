@@ -57,7 +57,7 @@
           </div>
           <div class="my-alerts-item-value" v-else>
             <span :class="$getColor(item.strike_rate, 'text-')">
-              {{ item.strike_rate }}%
+              {{ item.strike_rate  | TwoDecimal}}%
             </span>
           </div>
         </div>
@@ -92,16 +92,16 @@
             <div class="footy-button-group wrap-on-mobile">
               <b-button
                 class="footy-button"
-                @click="$emit('viewfilter', item.id)"
+                @click="$emit('viewfilter', item._id)"
               >
                 View
               </b-button>
               <template> </template>
-              <b-overlay :show="loading[item.id]" class="p-0">
+              <b-overlay :show="loading[item._id]" class="p-0">
                 <b-button
                   class="footy-button"
                   style="min-width: 162.54px"
-                  v-if="imported[item.id]"
+                  v-if="imported[item._id]"
                   variant="primary"
                 >
                   Imported
@@ -110,8 +110,8 @@
                   class="footy-button"
                   @click="
                     strategyMode == 'preset-alerts'
-                      ? promptImport(item.id)
-                      : importStrategy(item.id)
+                      ? promptImport(item._id)
+                      : importStrategy(item._id)
                   "
                   v-else
                 >

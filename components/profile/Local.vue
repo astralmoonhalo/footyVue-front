@@ -81,7 +81,7 @@ export default {
       return this.countries.map(country => {
         return {
           text: country.name,
-          value: country.id
+          value: country._id
         };
       });
     },
@@ -135,7 +135,7 @@ export default {
         // specified redirect URL
         //redirect_url:"https://callbacks.piedpiper.com/flutterwave.aspx?ismobile=34",
         meta: {
-          user_id: this.$auth.user.id
+          user_id: this.$auth.user._id
         },
         customer: {
           email: this.$auth.user.email,

@@ -4,7 +4,6 @@ API_ENDPOINT = 'https://soccer.sportmonks.com/api/v2.0/'
 API_TOKEN = '6CfQCuzlLWAPdqS1ATOdam08KAbgO59PAUgMGOaR8CHPIkje92sm2WYwPUEz'
 
 
-
 def get_pre_match_includes():
     return [
         "goals",
@@ -16,7 +15,8 @@ def get_pre_match_includes():
         "visitorTeam",
         "odds",
         "league.country",
-        "events"
+        "events",
+        "trends"
     ]
 
 
@@ -40,46 +40,36 @@ class SportMonksAPI:
         url = API_ENDPOINT + _url
         url = url.format(ids=",".join(map(str, ids)))
 
-        includes = get_pre_match_includes()
+        includes = [
+            "goals",
+            "cards",
+            "corners",
+            "stats",
+            "inplayOdds",
+            "odds",
+            "events",
+            "trends"
+        ]
 
         r = requests.get(url=url, params={
                          'api_token': API_TOKEN, 'page': page, 'include': ','.join(includes)})
-
         if r.status_code == 200:
             response = r.json()
-            # print(response)
 
-            if 'pagination' not in response['meta']:
-                response['meta']['pagination'] = {
-                    'current_page': 1,
-                    'total_pages': 1
-                }
-
-            pagination = response['meta']['pagination']
-
-            return {
-                'data': response['data'],
-                'current_page': pagination['current_page'],
-                'total_pages': pagination['total_pages']
-            }
-        else:
-            print(r.text)
-
+            return response["data"]
+            
     @classmethod
-    def get_fixtures_by_date(cls, date: str, page: int = 1):
+    def get_fixtures_by_date(cls, date: str, page: int = 1, includes: list = get_pre_match_includes()):
         _url = 'fixtures/date/{date}'
 
         url = API_ENDPOINT + _url
         url = url.format(date=date)
 
-        includes = get_pre_match_includes()
-
         r = requests.get(url=url, params={
                          'api_token': API_TOKEN, 'page': page, 'include': ','.join(includes)})
 
         if r.status_code == 200:
             response = r.json()
-            # print(response)
 
             if 'pagination' not in response['meta']:
                 response['meta']['pagination'] = {
@@ -104,10 +94,9 @@ class SportMonksAPI:
 
         r = requests.get(url=url, params={
                          'api_token': API_TOKEN, 'page': page, 'include': ','.join(includes)})
-      
+
         if r.status_code == 200:
             response = r.json()
-            # print(response)
 
             if 'pagination' not in response['meta']:
                 response['meta']['pagination'] = {
@@ -123,7 +112,6 @@ class SportMonksAPI:
                 'total_pages': pagination['total_pages']
             }
 
-    
     @classmethod
     def get_fixtures_by_team_id(cls, team_id: int, season_id: int, page: int = 1):
         _url = f'teams/{team_id}'
@@ -141,7 +129,6 @@ class SportMonksAPI:
 
         if r.status_code == 200:
             response = r.json()
-            # print(response)
             data = []
             for team in teams:
                 data.extend(response["data"][team]["data"])
@@ -151,27 +138,38 @@ class SportMonksAPI:
                 'current_page': 1,
                 'total_pages': 1
             }
+    def get_live_fixture_ids(cls):
+        _url = 'livescores/now'
+        url = API_ENDPOINT + _url
+
+        r = requests.get(url=url, params={
+                         'api_token': API_TOKEN,})
+
+        if r.status_code == 200:
+            response = r.json()
+            return [i["id"] for i in response['data']]
 
     def get_fixtures_live(cls, page: int = 1):
         _url = 'livescores/now'
         url = API_ENDPOINT + _url
 
         includes = [
-            "goals",
-            "cards",
-            "corners",
-            "stats",
-            "inplayOdds",
-            "events",
-            "trends"
+            # "goals",
+            # "cards",
+            # "corners",
+            # "stats",
+            # "inplayOdds",
+            # # "odds",
+            # "events",
+            # "trends"
         ]
-
+        # includes = get_pre_match_includes()
+        # includes = []
         r = requests.get(url=url, params={
                          'api_token': API_TOKEN, 'page': page, 'include': ','.join(includes)})
 
         if r.status_code == 200:
             response = r.json()
-            # print(response)
 
             if 'pagination' not in response.get('meta'):
                 response['meta']['pagination'] = {
@@ -186,9 +184,3 @@ class SportMonksAPI:
                 'current_page': pagination['current_page'],
                 'total_pages': pagination['total_pages']
             }
-# api  = SportMonksAPI()
-# res = api.get_fixtures_by_team_id(team_id=238093, season_id=18110)
-# import json
-# print(res)
-# with open(f"{238093}.json", "w") as f:
-#     f.write(json.dumps(res, indent=2))

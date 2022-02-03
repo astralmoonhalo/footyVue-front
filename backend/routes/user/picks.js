@@ -4,7 +4,7 @@ const { Pick } = require("@root/db");
 
 router.get("/", async (req, res) => {
   try {
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const sent_to_user = await Pick.sentToUser(user_id);
     const sent_to_others = await Pick.sentToOthers(user_id);
     res.json({

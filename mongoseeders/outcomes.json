@@ -1,0 +1,1248 @@
+[
+  {
+    "id": 1,
+    "code": "home_win",
+    "label": "Home Win",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 2,
+    "code": "draw",
+    "label": "Draw",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 3,
+    "code": "away_win",
+    "label": "Away Win",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 4,
+    "code": "home_win_or_draw",
+    "label": "Double Chance: 1X",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 5,
+    "code": "home_win_or_away_win",
+    "label": "Double Chance: 12",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 6,
+    "code": "away_win_or_draw",
+    "label": "Double Chance: X2",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 7,
+    "code": "home_win_ht",
+    "label": "Home Win at HT",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 8,
+    "code": "draw_ht",
+    "label": "Draw at HT",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 9,
+    "code": "away_win_ht",
+    "label": "Away Win at HT",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 10,
+    "code": "home_win_ht_home_win",
+    "label": "HT/FT: Home/Home",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 11,
+    "code": "home_win_ht_draw",
+    "label": "HT/FT: Home/Draw",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 12,
+    "code": "home_win_ht_away_win",
+    "label": "HT/FT: Home/Away",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 13,
+    "code": "draw_ht_home_win",
+    "label": "HT/FT: Draw/Home",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 14,
+    "code": "draw_ht_draw",
+    "label": "HT/FT: Draw/Draw",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 15,
+    "code": "draw_ht_away_win",
+    "label": "HT/FT: Draw/Away",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 16,
+    "code": "away_win_ht_home_win",
+    "label": "HT/FT: Away/Home",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 17,
+    "code": "away_win_ht_draw",
+    "label": "HT/FT: Away/Draw",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 18,
+    "code": "away_win_ht_away_win",
+    "label": "HT/FT: Away/Away",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 19,
+    "code": "btts",
+    "label": "BTTS:Yes",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 20,
+    "code": "btts_no",
+    "label": "BTTS:No",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 21,
+    "code": "btts_o25",
+    "label": "BTTS & Over 2.5 Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 22,
+    "code": "btts_or_o25",
+    "label": "BTTS or Over Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 23,
+    "code": "btts_1h",
+    "label": "BTTS 1H (Yes)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 24,
+    "code": "btts_2h",
+    "label": "BTTS 2H (Yes)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 25,
+    "code": "btts_1h_btts_2h",
+    "label": "BTTS 1H (Yes) & 2H (Yes)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 26,
+    "code": "home_win_o25",
+    "label": "Home Win & Over 2.5 Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 27,
+    "code": "draw_o25",
+    "label": "Draw & Over 2.5 Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 28,
+    "code": "away_win_o25",
+    "label": "Away Win & Over 2.5 Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 29,
+    "code": "home_win_btts",
+    "label": "Home Win & BTTS",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 30,
+    "code": "draw_btts",
+    "label": "Draw & BTTS",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 31,
+    "code": "away_win_btts",
+    "label": "Away Win & BTTS",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 32,
+    "code": "most_goals_1h",
+    "label": "Most Goals: 1st Half",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 33,
+    "code": "most_goals_2h",
+    "label": "Most Goals: 2nd Half",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 34,
+    "code": "u15_goals_1h",
+    "label": "Under 1.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 35,
+    "code": "u05_goals_1h",
+    "label": "Under 0.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 36,
+    "code": "o05_goals_1h",
+    "label": "Over 0.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 37,
+    "code": "o15_goals_1h",
+    "label": "Over 1.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 38,
+    "code": "o05_goals_2h",
+    "label": "Over 0.5 Second-Half Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 39,
+    "code": "o15_goals_2h",
+    "label": "Over 1.5 Second-Half Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 40,
+    "code": "o05_goals",
+    "label": "Over 0.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 41,
+    "code": "o15_goals",
+    "label": "Over 1.5 Total Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 42,
+    "code": "o25_goals",
+    "label": "Over 2.5 Total Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 43,
+    "code": "o35_goals",
+    "label": "Over 3.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 44,
+    "code": "o45_goals",
+    "label": "Over 4.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 45,
+    "code": "o55_goals",
+    "label": "Over 5.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 46,
+    "code": "u05_goals",
+    "label": "Under 0.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 47,
+    "code": "u15_goals",
+    "label": "Under 1.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 48,
+    "code": "u25_goals",
+    "label": "Under 2.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 49,
+    "code": "u35_goals",
+    "label": "Under 3.5 Total Goals",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 50,
+    "code": "u45_goals",
+    "label": "Under 4.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 51,
+    "code": "u55_goals",
+    "label": "Under 5.5 Total Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 52,
+    "code": "o05_home_goals",
+    "label": "Over 0.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 53,
+    "code": "o15_home_goals",
+    "label": "Over 1.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 54,
+    "code": "o25_home_goals",
+    "label": "Over 2.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 55,
+    "code": "u05_home_goals",
+    "label": "Under 0.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 56,
+    "code": "u15_home_goals",
+    "label": "Under 1.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 57,
+    "code": "u25_home_goals",
+    "label": "Under 2.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 58,
+    "code": "o05_away_goals",
+    "label": "Over 0.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 59,
+    "code": "o15_away_goals",
+    "label": "Over 1.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 60,
+    "code": "o25_away_goals",
+    "label": "Over 2.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 61,
+    "code": "u05_away_goals",
+    "label": "Under 0.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 62,
+    "code": "u15_away_goals",
+    "label": "Under 1.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 63,
+    "code": "u25_away_goals",
+    "label": "Under 2.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 64,
+    "code": "o05_home_goals_1h",
+    "label": "Over 0.5 Home Goals (1H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 65,
+    "code": "o15_home_goals_1h",
+    "label": "Over 1.5 Home Goals (1H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 66,
+    "code": "o05_home_goals_2h",
+    "label": "Over 0.5 Home Goals (2H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 67,
+    "code": "o15_home_goals_2h",
+    "label": "Over 1.5 Home Goals (2H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 68,
+    "code": "o15_away_goals_1h",
+    "label": "Over 1.5 Away Goals (1H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 69,
+    "code": "o05_away_goals_2h",
+    "label": "Over 0.5 Away Goals (2H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 70,
+    "code": "o15_away_goals_2h",
+    "label": "Over 1.5 Away Goals (2H)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 71,
+    "code": "goals_between_0_10",
+    "label": "0-10 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 72,
+    "code": "goals_between_0_15",
+    "label": "0-15 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 73,
+    "code": "goals_between_35_45",
+    "label": "35-45 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 74,
+    "code": "goals_between_40_45",
+    "label": "40-45 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 75,
+    "code": "goals_after_70",
+    "label": "Goal After 70 Mins",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 76,
+    "code": "goals_between_75_90",
+    "label": "75-90 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 77,
+    "code": "goals_between_80_90",
+    "label": "80-90 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 78,
+    "code": "goals_between_85_90",
+    "label": "85-90 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 79,
+    "code": "u65_corners",
+    "label": "Under 6.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 80,
+    "code": "o65_corners",
+    "label": "Over 6.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 81,
+    "code": "u75_corners",
+    "label": "Under 7.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 82,
+    "code": "o75_corners",
+    "label": "Over 7.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 83,
+    "code": "u85_corners",
+    "label": "Under 8.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 84,
+    "code": "o85_corners",
+    "label": "Over 8.5 Corners",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 85,
+    "code": "u95_corners",
+    "label": "Under 9.5 Corners",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 86,
+    "code": "o95_corners",
+    "label": "Over 9.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 87,
+    "code": "u105_corners",
+    "label": "Under 10.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 88,
+    "code": "o105_corners",
+    "label": "Over 10.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 89,
+    "code": "u115_corners",
+    "label": "Under 11.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 90,
+    "code": "o115_corners",
+    "label": "Over 11.5 Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 91,
+    "code": "o05_corners_1h",
+    "label": "Over 0.5 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 92,
+    "code": "o15_corners_1h",
+    "label": "Over 1.5 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 93,
+    "code": "o25_corners_1h",
+    "label": "Over 2.5 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 94,
+    "code": "o35_corners_1h",
+    "label": "Over 3.5 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 95,
+    "code": "o45_corners_1h",
+    "label": "Over 4.5 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 96,
+    "code": "o15_corners_2h",
+    "label": "Over 1.5 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 97,
+    "code": "o25_corners_2h",
+    "label": "Over 2.5 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 98,
+    "code": "o35_corners_2h",
+    "label": "Over 3.5 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 99,
+    "code": "o45_corners_2h",
+    "label": "Over 4.5 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 100,
+    "code": "most_corners_1h",
+    "label": "Most Corners: 1H",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 101,
+    "code": "most_corners_2h",
+    "label": "Most Corners: 2H",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 102,
+    "code": "most_corners_no",
+    "label": "Most Corners: Tie",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 103,
+    "code": "o25_home_corners",
+    "label": "Over 2.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 104,
+    "code": "o35_home_corners",
+    "label": "Over 3.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 105,
+    "code": "o45_home_corners",
+    "label": "Over 4.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 106,
+    "code": "o55_home_corners",
+    "label": "Over 5.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 107,
+    "code": "o65_home_corners",
+    "label": "Over 6.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 108,
+    "code": "o75_home_corners",
+    "label": "Over 7.5 Home Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 109,
+    "code": "o25_away_corners",
+    "label": "Over 2.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 110,
+    "code": "o35_away_corners",
+    "label": "Over 3.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 111,
+    "code": "o45_away_corners",
+    "label": "Over 4.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 112,
+    "code": "o55_away_corners",
+    "label": "Over 5.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 113,
+    "code": "o65_away_corners",
+    "label": "Over 6.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 114,
+    "code": "o75_away_corners",
+    "label": "Over 7.5 Away Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 115,
+    "code": "o15_home_corners_1h",
+    "label": "Over 1.5 Home 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 116,
+    "code": "o25_home_corners_1h",
+    "label": "Over 2.5 Home 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 117,
+    "code": "o35_home_corners_1h",
+    "label": "Over 3.5 Home 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 118,
+    "code": "o45_home_corners_1h",
+    "label": "Over 4.5 Home 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 119,
+    "code": "o15_away_corners_1h",
+    "label": "Over 1.5 Away 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 120,
+    "code": "o25_away_corners_1h",
+    "label": "Over 2.5 Away 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 121,
+    "code": "o35_away_corners_1h",
+    "label": "Over 3.5 Away 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 122,
+    "code": "o45_away_corners_1h",
+    "label": "Over 4.5 Away 1H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 123,
+    "code": "o15_home_corners_2h",
+    "label": "Over 1.5 Home 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 124,
+    "code": "o25_home_corners_2h",
+    "label": "Over 2.5 Home 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 125,
+    "code": "o35_home_corners_2h",
+    "label": "Over 3.5 Home 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 126,
+    "code": "o45_home_corners_2h",
+    "label": "Over 4.5 Home 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 127,
+    "code": "o15_away_corners_2h",
+    "label": "Over 1.5 Away 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 128,
+    "code": "o25_away_corners_2h",
+    "label": "Over 2.5 Away 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 129,
+    "code": "o35_away_corners_2h",
+    "label": "Over 3.5 Away 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 130,
+    "code": "o45_away_corners_2h",
+    "label": "Over 4.5 Away 2H Corners",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 131,
+    "code": "corners_between_0_10",
+    "label": "0-10 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 132,
+    "code": "corners_between_0_15",
+    "label": "0-15 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 133,
+    "code": "corners_between_35_45",
+    "label": "35-45 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 134,
+    "code": "corners_between_40_45",
+    "label": "40-45 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 135,
+    "code": "corners_between_75_90",
+    "label": "75-90 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 136,
+    "code": "corners_between_80_90",
+    "label": "80-90 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 137,
+    "code": "corners_between_85_90",
+    "label": "85-90 Min Corner",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 138,
+    "code": "o25_cards",
+    "label": "Over 2.5 Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 139,
+    "code": "o35_cards",
+    "label": "Over 3.5 Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 140,
+    "code": "o45_cards",
+    "label": "Over 4.5 Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 141,
+    "code": "o55_cards",
+    "label": "Over 5.5 Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 142,
+    "code": "o05_home_yellow_cards",
+    "label": "Over 0.5 Home Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 143,
+    "code": "o15_home_yellow_cards",
+    "label": "Over 1.5 Home Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 144,
+    "code": "o25_home_yellow_cards",
+    "label": "Over 2.5 Home Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 145,
+    "code": "o05_away_yellow_cards",
+    "label": "Over 0.5 Away Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 146,
+    "code": "o15_away_yellow_cards",
+    "label": "Over 1.5 Away Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 147,
+    "code": "o25_away_yellow_cards",
+    "label": "Over 2.5 Away Yellow Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 148,
+    "code": "o05_home_away_cards",
+    "label": "Over 0.5 Cards (Both Teams)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 149,
+    "code": "o15_home_away_cards",
+    "label": "Over 1.5 Cards (Both Teams)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 150,
+    "code": "o05_home_red_cards",
+    "label": "Over 0.5 Home Red Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 151,
+    "code": "o05_away_red_cards",
+    "label": "Over 0.5 Away Red Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 152,
+    "code": "o05_cards_1h",
+    "label": "Over 0.5 1H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 153,
+    "code": "o15_cards_1h",
+    "label": "Over 1.5 1H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 154,
+    "code": "o25_cards_1h",
+    "label": "Over 2.5 1H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 155,
+    "code": "o05_cards_2h",
+    "label": "Over 0.5 2H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 156,
+    "code": "o15_cards_2h",
+    "label": "Over 1.5 2H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 157,
+    "code": "o25_cards_2h",
+    "label": "Over 2.5 2H Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 158,
+    "code": "o05_home_cards_1h",
+    "label": "Over 0.5 1H Home Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 159,
+    "code": "o15_home_cards_1h",
+    "label": "Over 1.5 1H Home Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 160,
+    "code": "o05_away_cards_1h",
+    "label": "Over 0.5 1H Away Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 161,
+    "code": "o15_away_cards_1h",
+    "label": "Over 1.5 1H Away Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 162,
+    "code": "o05_home_cards_2h",
+    "label": "Over 0.5 2H Home Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 163,
+    "code": "o15_home_cards_2h",
+    "label": "Over 1.5 2H Home Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 164,
+    "code": "o05_away_cards_2h",
+    "label": "Over 0.5 2H Away Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 165,
+    "code": "o15_away_cards_2h",
+    "label": "Over 1.5 2H Away Cards",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 166,
+    "code": "o8_corners",
+    "label": "Over 8.0 Corners",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 167,
+    "code": "u9_corners",
+    "label": "Under 9.0 Corners",
+    "active": true,
+    "is_bet_builder": true
+  },
+  {
+    "id": 168,
+    "code": "goals_between_5_15",
+    "label": "5-15 Min Goal",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 169,
+    "code": "goals_between_5_15_no",
+    "label": "5-15 Min Goal (No)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 170,
+    "code": "goals_after_70_no",
+    "label": "Goals after 70th Min (No)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 171,
+    "code": "goals_after_75",
+    "label": "Goals after 75th Min (Yes)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 172,
+    "code": "goals_after_75_no",
+    "label": "Goals after 75th Min (No)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 173,
+    "code": "goals_before_30",
+    "label": "Goals before 30th Min (Yes)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 174,
+    "code": "goals_before_30_no",
+    "label": "Goals before 30th Min (No)",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 175,
+    "code": "u35_home_goals",
+    "label": "Under 3.5 Home Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 176,
+    "code": "u35_away_goals",
+    "label": "Under 3.5 Away Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 177,
+    "code": "u25_goals_1h",
+    "label": "Under 2.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": null
+  },
+  {
+    "id": 179,
+    "code": "o25_goals_1h",
+    "label": "Over 2.5 First-Half Goals",
+    "active": true,
+    "is_bet_builder": null
+  }
+]

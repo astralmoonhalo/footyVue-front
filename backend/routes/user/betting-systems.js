@@ -18,7 +18,7 @@ router.use("/", isPro);
 router.get("/id", async (req, res) => {
   try {
     const { id } = req.query;
-    const betting_system = await BettingSystem.findOne(id);
+    const betting_system = await BettingSystem.findActiveById(id);
     res.json(betting_system);
   } catch (error) {
     console.error(error);
@@ -29,7 +29,7 @@ router.get("/id", async (req, res) => {
 router.post("/import/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const strategy = await Strategy.import(id, user_id, true);
     res.send(strategy);
   } catch (err) {

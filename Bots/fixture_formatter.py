@@ -704,32 +704,6 @@ class FixtureFormatter:
                 "ht_result":  formatted_odds.get("away_win_ht"),
                 "dnb":  formatted_odds.get("dnb_away")
             }
-            if self.is_live:
-                underdog = None
-                underdog_playing_home = None
-                favorite = None
-                favorite_playing_away = None
-                favorite_playing_home = None
-                underdog_playing_away = None
-
-                home_win = formatted_odds.get("home_win", 0)
-                away_win = formatted_odds.get("away_win", 0)
-                if home_win > away_win:
-                    underdog = "home"
-                    underdog_playing_home = "home"
-                    favorite = "away"
-                    favorite_playing_away = "away"
-                elif home_win < away_win:
-                    underdog = "away"
-                    underdog_playing_away = "away"
-                    favorite = "home"
-                    favorite_playing_home = "home"
-                self.underdog = underdog
-                self.underdog_playing_home = underdog_playing_home
-                self.favorite = favorite
-                self.favorite_playing_away = favorite_playing_away
-                self.underdog_playing_away = underdog_playing_away
-                self.favorite_playing_home = favorite_playing_home
 
             return formatted_odds
         except Exception as e:
@@ -797,6 +771,34 @@ class FixtureFormatter:
                 key = PREMATCH_ODDS_MAP_NEW.get((market_name, k,))
                 if key:
                     formatted_odds[key] = float(v) if v else None
+
+        if self.is_live:
+            underdog = None
+            underdog_playing_home = None
+            favorite = None
+            favorite_playing_away = None
+            favorite_playing_home = None
+            underdog_playing_away = None
+
+            home_win = formatted_odds.get("home_win", 0)
+            away_win = formatted_odds.get("away_win", 0)
+            if home_win > away_win:
+                underdog = "home"
+                underdog_playing_home = "home"
+                favorite = "away"
+                favorite_playing_away = "away"
+            elif home_win < away_win:
+                underdog = "away"
+                underdog_playing_away = "away"
+                favorite = "home"
+                favorite_playing_home = "home"
+            self.underdog = underdog
+            self.underdog_playing_home = underdog_playing_home
+            self.favorite = favorite
+            self.favorite_playing_away = favorite_playing_away
+            self.underdog_playing_away = underdog_playing_away
+            self.favorite_playing_home = favorite_playing_home
+
         return formatted_odds
 
     @staticmethod
@@ -1045,7 +1047,8 @@ class FixtureFormatter:
         for team in teams:
             # print(data.get(instance[team]), "TTETTET")
             formatted[team] = data.get(instance.get(team))
-
+        
+        # print(formatted, instance, "\n\n")
         # print("HAHAHAH", formatted)
         # if data.get("live_odds"):
         #     for team in teams:
@@ -1217,6 +1220,20 @@ class FixtureFormatter:
                     self.__format_favorite_underdog_winning_losing(stats_minute))
                 data.update({
                     'stats_minute': stats_minute})
+        try:
+            if hasattr(self, 'underdog'):
+                data.update({
+                    'is_live': self.is_live})
+                data.update({
+                    "underdog": self.underdog,
+                    "underdog_playing_home": self.underdog_playing_home,
+                    "favorite": self.favorite,
+                    "favorite_playing_away": self.favorite_playing_away,
+                    "underdog_playing_away": self.underdog_playing_away,
+                    "favorite_playing_home": self.favorite_playing_home
+                })
+        except Exception as e:
+            print("HERE",e)
 
         keys = fixture.keys()
         if not self.is_live and "goals" in keys and "corners" in keys and "cards" in keys and "stats" in keys:

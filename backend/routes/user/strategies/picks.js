@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
   try {
     const { strategy_id, date, page } = req.query;
     //const filter_instance = await getStrategyWithPicks(id);
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     //const filter = await getRequiredStrategyData(filter_instance);
     const picks = await Pick.findWithFixture(strategy_id, user_id, date, page);
 
@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
 router.get("/export/:strategy_id", async (req, res) => {
   try {
     const { strategy_id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const keys = [
       "fixture_name",
       "country_name",
@@ -80,7 +80,7 @@ router.get("/export/:strategy_id", async (req, res) => {
 router.post("/strike", async (req, res) => {
   try {
     const { pick_id, strike } = req.body;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const strike_rate = await Pick.updateStrike(pick_id, strike, user_id);
     res.json({ strike_rate });
   } catch (err) {
@@ -95,7 +95,7 @@ router.post("/strike", async (req, res) => {
 router.get("/clearstrike", async (req, res) => {
   try {
     const { strategy_id } = req.query;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const picks = await Pick.clearStrike(strategy_id, user_id);
     res.json({ picks });
   } catch (err) {
@@ -110,7 +110,7 @@ router.get("/clearstrike", async (req, res) => {
 router.get("/league/delete", async (req, res) => {
   try {
     const { strategy_id, league_id } = req.query;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     const picks = await Pick.deletePicksByLeague(
       strategy_id,
       league_id,
@@ -131,7 +131,7 @@ router.get("/league/delete", async (req, res) => {
 router.get("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user_id = req.user.user.id;
+    const user_id = req.user.user._id;
     await Pick.deleteById(id, user_id);
     res.json({ success: true });
   } catch (err) {

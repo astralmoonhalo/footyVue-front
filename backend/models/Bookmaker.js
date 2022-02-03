@@ -1,26 +1,6 @@
-const { Model } = require("objection");
-
-class Bookmaker extends Model {
-  static get tableName() {
-    return "bookmakers";
-  }
-}
-
-
-Bookmaker.findAll = function () {
-  return this.query();
-};
-
-Bookmaker.bulkCreate = function (items) {
-  items = items.map((item) => {
-    const { id, name, logo } = item;
-    return {
-      id,
-      name,
-      logo,
-    };
-  });
-  return this.knex().table("bookmakers").insert(items).onConflict("id").merge();
-};
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const BookmakerSchema = new Schema({}, { strict: false });
+const Bookmaker = mongoose.model("Bookmaker", BookmakerSchema);
 
 module.exports = Bookmaker;

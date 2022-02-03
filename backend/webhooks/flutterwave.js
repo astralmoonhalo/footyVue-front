@@ -11,10 +11,10 @@ async function createCharge(data) {
     createdAt: created_at,
     amount,
     currency,
-    "event.type": payment_method
+    "event.type": payment_method,
   } = data;
   const plan_id = process.env.PRO_PLAN_ID || 1;
-  const plan = await Plan.findById(plan_id || 1);
+  const plan = await Plan.findOne({ id: Number(plan_id || 1) });
 
   await Transaction.create({
     checkout_id,
@@ -29,7 +29,7 @@ async function createCharge(data) {
     amount_usd: plan.price,
     status: "pending",
     gateway: "flutterwave",
-    created_at
+    created_at,
   });
 
   await User.issueSubByAdmin({ email, plan_id, order_id: checkout_id });
