@@ -58,22 +58,21 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        const user = await User.findByEmail(email);
-
+        const user = await User.findByEmail(email);        
         if (!user) {
           return done(null, false, { message: "User not found" });
         }
         if (
           process.env.DOMAIN == "macbook.local" &&
           password == "Macbook123?"
-        ) {
+        ) {          
           return done(null, user, { message: "Logged in Successfully" });
         }
-        const validate = await user.isValidPassword(password);
+        const validate = await user.isValidPassword(password);        
 
         if (!validate) {
           return done(null, false, { message: "Wrong Password" });
-        }
+        } 
         return done(null, user, { message: "Logged in Successfully" });
       } catch (error) {
         return done(error);

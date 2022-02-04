@@ -68,6 +68,7 @@
           >
           </FixtureDetails>
         </ModalOnMobile>
+        
       </div>
     </UpgradeToPro>
     <LoadMore v-if="loading" />

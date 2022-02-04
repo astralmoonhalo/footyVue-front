@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
     "in-play-alerts": "in-play",
     "pre-match-alerts": "pre-match",
   };
-  // console.log("index, strategues", req.query);
+  console.log("index, strategues", req.query);
   const type = types[req.query.type];
   //const { } = req.params;
   const user_id = req.user.user._id;
@@ -47,6 +47,8 @@ router.post("/exclude-league/:id", async (req, res) => {
     const { id } = req.params;
     const { league_id } = req.body;
     const user_id = req.user.user._id;
+
+    console.log('request-----id===='+id);
 
     await Strategy.excludeLeague(id, user_id, league_id);
     res.send({ success: true });

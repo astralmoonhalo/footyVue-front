@@ -1,92 +1,58 @@
 const express = require("express")
-const Strategy = require('./m_Strategy');
-const Fixture = require('./m_Fixture');
-const moment = require('moment');
+const { Strategy, Fixture } = require("../../../db");
 const StrategyFormatter = require("../../../formatters/StrategyFormatter");
 const { ObjectId } = require("mongodb");
 const router = express.Router()
 const fomatter = new StrategyFormatter();
 
-
-router.get("/strategy_count", async(req, res) => {
-    console.log('strategy_count');
-    await Strategy.count({
-        user_id: ObjectId('6181a1476a8b1f99203adb3a'),
-        active: true,
-        type: "pre-match"
-    }).exec(function(err, count) {     
-        res.send({ "count": count });
-    });
-});
-
-router.get("/strategies/:id/:page/:timestamp", async(req, res) => {
- 
-    let start_timestamp = Number(req.params.timestamp);
-
+router.get("/fetch_strategies/:page/:date", async(req, res) => {
+    console.log('fetch_strategies');
+    let user_id = req.user.user._id;    
+    let type = 'pre-match';
+    let page = Number(req.params.page);
     let strategyList = [];
-    await Strategy.find({
-        user_id: ObjectId("6181a1476a8b1f99203adb3a"),
-        active: true,
-        type: "pre-match"
-    }).skip((req.params.page - 1) * 5).limit(5).exec(async function(err, strategies) {
-        console.log(1);
-        await strategies.forEach(async(d) => {
-            const strategy = await Strategy.findOne({ id: d.id });
-            const query = fomatter.format(strategy);
+    let date = req.params.date;
+    let view_count = 1;
+    console.log('changepage',page);
+    const count = await Strategy.count({type:type, user_id:ObjectId(user_id), active:true});
+    
+    const strategies = await Strategy.find({type:type, user_id:ObjectId(user_id), active:true}).skip((page - 1) * 5).limit(5);
+       
+    await strategies.map(async(strategy, index)=>{
+        const fixtures = await Fixture.findUpcomingResults(
+            strategy,
+            "upcoming",
+            date,
+            view_count
+            );            
+            strategyList.push({ "_id": strategy._id, "title": strategy.title, "outcome": strategy.outcome, 'leagues':strategy.leagues, "fixtures": fixtures, "view_count": 0, "selected_date": date*1000, "count":count });
+            if(strategyList.length==strategies.length){                
+                res.send(strategyList);
+            }
             
-            await Fixture.find({timestamp: { 
-                $gte: start_timestamp,
-                $lte: start_timestamp+86400,
-            }} ).find(query).limit(10).exec(function(err, fixtures) {                            
-                strategyList.push({ "id": d.id, "title": d.title, "outcome": d.outcome, "fixtures": fixtures, "view_count": 0, "selected_date": start_timestamp*1000 });
-                if (strategyList.length === strategies.length) {                    
-                    res.send(strategyList);
-                    console.log('loading successfully');
-                }
-            })
-
-        });        
-
-    });
-
-});
-
+    });                       
+}) ;
 
 
 router.post("/fixtures", async(req, res) => {
-    let start_timestamp = Number(req.body.current_timestamp);
-    const strategy = await Strategy.findOne({ id: req.body.strategy_id });
-    const query = fomatter.format(strategy);
-    const fixtures = await Fixture.find({timestamp: { 
-                $gte: start_timestamp,
-                $lte: start_timestamp+86400,
-            }} ).find(query).select({
-        "fixture_id": 1,
-        "away_id": 1,
-        "away_logo": 1,
-        "away_name": 1,
-        "country_name": 1,
-        "date": 1,
-        "fixture_name": 1,
-        "home_id": 1,
-        "home_logo": 1,
-        "home_name": 1,
-        "id": 1,
-        "iso": 1,
-        "probability": 1,
-        "status": 1,
-        "time": 1,
-        "ft_score": 1,
-        "ht_score": 1,
-        "timestamp": 1,
-        "home_position": 1,
-        "away_position": 1
-        
-    }).skip(req.body.view_count * 10).limit(10).catch(e => {
-        console.log(e);
+    // let user_id = req.user.user._id;        
+    let date = req.body.date;
+    let view_count = req.body.view_count;
+    let strategy_id = req.body.strategy_id;
+    console.log(date,view_count,strategy_id);
+    const strategy = await Strategy.findOne({ id: strategy_id }).then(async(strategy_v) => {        
+        const fixtures = await Fixture.findUpcomingResults(
+            strategy_v,
+            "upcoming",
+            date,
+            view_count
+            );
+        if(fixtures){
+            res.send(fixtures);
+        }            
     });
-    res.send(fixtures);
-})
+});
+
 
 module.exports = router
 

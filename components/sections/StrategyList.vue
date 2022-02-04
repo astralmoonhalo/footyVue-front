@@ -33,7 +33,7 @@
             class="footy-button"
             :to="`/${strategyType}/${upcomingModel.slug}`"                        
             :key="upcomingModel.slug"
-            v-if="$auth.user.subscription.plan_id==1"
+            v-if="$auth.user.subscription.plan_id==1"          
           >
             <component class="icon-left" :is="upcomingModel.icon" />
             <span class="text">{{ upcomingModel.label }}</span>

@@ -6,6 +6,7 @@ const { body, validationResult } = require("express-validator");
 
 router.get("/results/", async (req, res) => {
   try {
+    
     const { id, page, date } = req.query;
     const strategy = await Strategy.findByStrategyId(id, req.user.user._id);
     // console.log(strategy);
@@ -19,8 +20,9 @@ router.get("/results/", async (req, res) => {
   }
 });
 router.get("/upcoming/", async (req, res) => {
-  try {
+  try {    
     const { id, page, date } = req.query;
+    console.log('prematch-vishal',req.query,date);
     const strategy = await Strategy.findByStrategyId(id, req.user.user._id);
     // console.log(strategy);
     const fixtures = await Fixture.findResults(

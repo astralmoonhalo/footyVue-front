@@ -368,6 +368,74 @@ Fixture.findResults = async function (
   return fixtures;
 };
 
+Fixture.findUpcomingResults = async function (
+  strategy,
+  type = "past",
+  date = moment().utc().unix(),
+  page = 1
+) {
+  page = Math.max(Number(page || 1), 0);
+  console.log(date * 1000);
+  date = moment
+    .utc(date * 1000)
+    .startOf("day")
+    .toDate();
+  const perPage = 10;
+  const skip = (page - 1) * perPage;
+  // console.log("types is", type);
+  const formatter = new StrategyFormatter();
+  const match = formatter.format(strategy);
+  // console.log(JSON.stringify(match, null, 2));
+  // console.log(match)
+  var extra = {
+    date,
+  };
+  var date_time = -1;
+  if (type == "past") {
+    Object.assign(extra, {
+      status: { $in: ["FT", "FT_PEN"] },
+      result_updated: true,
+      "result.ft_score": { $ne: null },
+      ["result." + strategy.outcome.code]: { $in: [true, false] },
+    });
+  } else {
+    Object.assign(extra, {
+      status: { $nin: ["FT", "FT_PEN"] },
+      timestamp: { $gt: moment().unix() },
+      //result_updated: true
+    });
+    date_time = 1;
+  }
+  Object.assign(match, extra);
+  // console.log(match);
+  // console.log(strategy.outcome);
+
+  const fixtures = await Fixture.aggregate([
+    {
+      $match: {
+        ...match,
+        // $or: [{ "result.home_win": true }, { "result.away_win": true }]
+      },
+    },
+    { $sort: { date_time } },
+    { $skip: skip },
+    { $limit: perPage },
+    {
+      $addFields: {
+        ...getAddFields(),
+        is_hit: { $eq: ["$result." + strategy.outcome.code, true] },
+      },
+    },
+    {
+      $project: getRequiredFields(),
+    },
+  ]);
+
+  return fixtures;
+};
+
+
+
 Fixture.getTodaysCount = function () {
   var date = moment.utc().startOf("day").toDate();
   return this.count({ date });
