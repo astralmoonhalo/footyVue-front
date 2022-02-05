@@ -78,7 +78,7 @@
                         size="sm"
                         variant="transparent"
                         @click="promptExcludeLeague(league.league_id, strategy_index)"
-                        v-show="league.league_id"
+                        v-show="league.league_id in includedLeagues(strategy_index)"
                       >
                         EXCLUDE LEAGUE
                       </b-button>                      
@@ -278,6 +278,20 @@ export default {
       this.showPrompt = true;
       this.exclude_league_id = league_id;
       this.s_index = index;
+    },
+
+    includedLeagues(index) {
+      if (!this.strategies[index]) {
+        return {};
+      }
+      return Object.assign(
+        {},
+        ...this.strategies[index].leagues.map((id) => {
+          return {
+            [id]: 1,
+          };
+        })
+      );
     },
 
     getFlag(iso) {
