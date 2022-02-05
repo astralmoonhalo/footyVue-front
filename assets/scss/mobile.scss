@@ -3,7 +3,7 @@
     margin-top: 12px;
     //padding-bottom: 12px;
     margin-bottom: 24px;
-    display: none !important;
+    // display: none !important;
     flex-direction: column;
     .footy-page-header-info {
       display: flex;
@@ -41,6 +41,7 @@
     flex-shrink: 0;
     // flex-grow: 0;
     white-space: nowrap;
+    margin-top: 20px;
   }
 
   // .scroll-on-mobile {
@@ -62,7 +63,7 @@
     width: 100%;
   }
   .avatar {
-    background: #eef5ed;
+    background: #eef5ed; 
     width: 52px;
     height: 52px;
     padding: 11px;
@@ -78,12 +79,7 @@
     align-items: flex-start;
   }
 
-  .filter-button {
-    .btn-light{
-      background-color: #d9ebd6;
-      border : 1px solid #e5e5e5;      
-    }
-
+  .b-sidebar-backdrop {
+    opacity: 0.1 !important;
   }
-
 }
