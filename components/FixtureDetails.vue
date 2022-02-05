@@ -547,7 +547,7 @@ export default {
   border-radius: 15px;
   width: 564px;
   position: fixed;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  // box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   z-index: 100;
   font-weight: 500;
 }

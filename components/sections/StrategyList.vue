@@ -101,6 +101,7 @@ import PlusIcon from "~/static/icons/plus.svg";
 import PresetIcon from "~/static/icons/preset.svg";
 import BellIcon from "~/static/icons/bell.svg";
 import ExploreIcon from "~/static/icons/explore.svg";
+import UpcomingIcon from "~/static/icons/upcoming.svg";
 export default {
   props: {
     pageTitle: String,
@@ -115,7 +116,7 @@ export default {
         { label: "Preset", slug: "preset-alerts", icon: PresetIcon },
         { label: "Explore", slug: "explore-alerts", icon: ExploreIcon },
       ],
-      upcomingModel: { label: "UpComing", slug: "upcoming", icon: ExploreIcon },
+      upcomingModel: { label: "Upcoming", slug: "upcoming", icon: UpcomingIcon },
       initialized: false,
       alerts: [],
       loading: false,

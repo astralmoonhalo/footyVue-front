@@ -18,6 +18,7 @@
     </template>
 
     <div class="strategy-list-table-wrapper">
+      <LoadMore v-if="upcoming_loadingState" />
       <b-overlay :show="loading" rounded="lg">
         <div class="up-coming-body">
           <div
@@ -118,8 +119,8 @@
                 <b-button
                   class="footy-button mr-2"
                   variant="primary"
-                  :disabled="!activeViewLess(strategy['id'])"
-                  @click="viewLess(strategy['id'])"
+                  :disabled="!activeViewLess(strategy_index)"
+                  @click="viewLess(strategy_index)"
                   v-if="strategy['fixtures'].length!=0"
                 >
                     <DeleteIcon class="icon-left" />
@@ -135,11 +136,11 @@
                   <PlusIcon class="icon-left" />
                   <span class="text"> Load More </span>
                 </b-button>
-                <span v-if="strategy['fixtures'].length==0&&loading_fixtures==false" class="strategy-header-description">
-                  No fixture exist.
+                <span v-if="strategy['fixtures'].length==0" class="strategy-header-description">
+                  {{loading_fixtures==null?'No more upcoming futures for this date.':''}}
                 </span>
               </div>
-              <div :class="loading_fixtures?'':'hidden'" class="overlay-region" >
+              <div :class="loading_fixtures==strategy_index?'':'hidden'" class="overlay-region" >
                 <b-spinner
                   variant="success"
                   type="grow"
@@ -147,7 +148,7 @@
                 ></b-spinner>
               </div>
             </div>
-          </div>
+          </div>          
           <b-pagination
             v-model="currentPage"
             :total-rows="strategy_count"
@@ -156,8 +157,7 @@
             class="mt-3"                        
           ></b-pagination>
         </div>        
-      </b-overlay>      
-      <LoadMore v-if="loading_date_fixtures" />
+      </b-overlay>            
       <FixtureScrollPicker v-model="selected_scroller" />      
     </div>
     <PromptModal
@@ -178,7 +178,7 @@ import PlusIcon from "~/static/icons/plus.svg";
 import DeleteIcon from "~/static/icons/dash-lg.svg";
 
 export default {
-  name: "UpComing",
+  name: "Upcoming",
   components: {
     FixtureScrollPicker,
     GeneralPage,
@@ -196,7 +196,7 @@ export default {
 
   data() {
     return {
-      pageTitle: "UpComing",
+      pageTitle: "Upcoming",
       pageDescription:"This page shows you all the upcoming picks for all your active strategies all on one page.",
       perPage: 5,
       currentPage: 1,
@@ -204,14 +204,14 @@ export default {
       strategies: [],
       fixtures: [],
       loading: false,
-      loading_fixtures: false,
+      loading_fixtures: null,
+      upcoming_loadingState: false,
       selected_date: new Date(),
       selected_scroller: "stats_scroller",
       date_strategy_id: '',
       selected_stat: "ft_result",
-      stat: "ft_result",      
-      loading_date_fixtures: false,    
-      show_fixture_details: true,
+      stat: "ft_result",            
+      show_fixture_details: false,
       type: "pre-match-alerts",
       selected_fixture: null,
       initialized: false,
@@ -222,28 +222,30 @@ export default {
       date_viewMode: false
     };
   },
-  mounted() {    
-    this.loading_date_fixtures = true;
+  
+  mounted() {        
     //get UTC Date.
     var date = new Date().toUTCString();    
     //get the strategy count by user_id
+    this.upcoming_loadingState = true;
     this.$axios
       .get("user/upcoming/fetch_strategies/"+ this.currentPage+'/'+this.$moment(this.selected_date).unix())
       .then((response) => {
         console.log('response.data=',response.data);
         this.strategy_count = response.data[0].count;
+        this.upcoming_loadingState=false
         this.strategies = response.data;        
       })
       .catch((error) => {
         console.log(error);
         this.errored = true;
       })
-      .finally();
+      .finally();      
   },
    watch: {    
     strategies(){
-      
-    },
+      this.upcoming_loadingState=false;
+    },    
     
     currentPage() {
       this.changedPage();
@@ -268,7 +270,7 @@ export default {
       );
       var index = this.strategies[this.s_index].leagues.indexOf(league_id);
       if (index !== -1) {
-        this.this.strategies[this.s_index].leagues.splice(index, 1);
+        this.strategies[this.s_index].leagues.splice(index, 1);
       }
     },
 
@@ -279,11 +281,12 @@ export default {
     },
 
     getFlag(iso) {
-      this.loading_date_fixtures = false;
+      this.upcoming_loadingState = false;
       return iso ? "flag-icon-" + iso : "flag-icon-un";
     },
-    activeViewLess: function (strategy_id) {
-      const idx = this.strategies.findIndex((d) => d.id === strategy_id);
+
+    activeViewLess: function (strategy_index) {
+      const idx = strategy_index;
       if (idx === -1) return false;
       if (this.strategies[idx]["view_count"] > 0) {
         return true;
@@ -308,9 +311,8 @@ export default {
      */
     changedPage:function() {
       // this.loading = true;
-      this.loading_date_fixtures = true;
-      this.strategies = [];
-      alert(this.currentPage)
+      this.upcoming_loadingState = true;
+      this.strategies = [];      
       //get strategies by user_id and page
       this.$axios
         .get("user/upcoming/fetch_strategies/"+ this.currentPage+'/'+this.$moment(this.selected_date).unix())
@@ -322,15 +324,15 @@ export default {
         console.log(error);
         this.errored = true;
       })
-      .finally(() => this.loading_date_fixtures = false);
+      .finally(() => this.upcoming_loadingState = false);
     },
 
     /**
      * function for view less
      * @param{Number} strategy_id
      */
-    viewLess: function (strategy_id) {
-      const idx = this.strategies.findIndex((d) => d.id === strategy_id);      
+    viewLess: function (strategy_index) {
+      const idx = strategy_index;      
       //if the count of fixtures for strategy is more than 20 remove 10 data from the last
       if (this.strategies[idx]["fixtures"].length >= 20) {
         console.log(this.strategies[idx]["view_count"] * 10);
@@ -355,13 +357,12 @@ export default {
      */
     viewMore: function (strategy_index) {
       //active loading      
-      this.loading_fixtures = true;
-      if(!this.date_viewMode){        
+      this.loading_fixtures = strategy_index;
+      if(!this.date_viewMode){                
         this.strategies[strategy_index]["view_count"] =
         this.strategies[strategy_index]["view_count"] + 1;
       }      
-      //get index by strategy_id
-      // const idx = this.strategies.findIndex((d) => d.id === strategy_id);                
+      //get index by strategy_id                      
       // get data by strategy_id and view_count.
       this.$axios
         .post("user/upcoming/fixtures", {
@@ -379,7 +380,7 @@ export default {
           console.log(error);
           this.errored = true;
         })
-        .finally(() => (this.loading_fixtures = false)); //deactive loading        
+        .finally(() => (this.loading_fixtures = null, this.date_viewMode = false)); //deactive loading        
     },
   },
 };
@@ -408,7 +409,7 @@ export default {
   }
 
   .strategy-header-title{
-      font-size: 40px;
+      font-size: 30px;
       font-family: Colfax;
       font-weight: 600;
       @media(max-width:768px){
@@ -427,8 +428,24 @@ export default {
   }
   .hidden{
       display: none;
+  }  
+}
+
+@media screen and (min-width: $lg) {
+  .is_hit {
+    border-left: 4px solid $primary;
   }
-  
+  .not_hit {
+    border-left: 4px solid $red;
+  }
+}
+@media screen and (max-width: $lg) {
+  .is_hit {
+    border-top: 4px solid $primary;
+  }
+  .not_hit {
+    border-top: 4px solid $red;
+  }
 }
 
 </style>

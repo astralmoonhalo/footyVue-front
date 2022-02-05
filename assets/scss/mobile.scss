@@ -3,7 +3,7 @@
     margin-top: 12px;
     //padding-bottom: 12px;
     margin-bottom: 24px;
-    display: flex;
+    display: none !important;
     flex-direction: column;
     .footy-page-header-info {
       display: flex;
@@ -21,6 +21,7 @@
       line-height: 36px;
     }
   }
+
 
   .footy-page-container {
     padding: 20px 16px;
@@ -76,4 +77,13 @@
   .league-name-inner-strategy {
     align-items: flex-start;
   }
+
+  .filter-button {
+    .btn-light{
+      background-color: #d9ebd6;
+      border : 1px solid #e5e5e5;      
+    }
+
+  }
+
 }
